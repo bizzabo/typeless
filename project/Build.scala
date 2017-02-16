@@ -6,7 +6,7 @@ object MyBuild extends Build{
   val projectName = "x-shapeless"
   lazy val aRootProject = Project(id = projectName, base = file("."),
     settings = Seq(
-      version := "1.0.0",
+      version := "0.1.1",
       name := projectName,
       scalaVersion := "2.11.8",
       description := "It provides some extra shapeless functionallity",

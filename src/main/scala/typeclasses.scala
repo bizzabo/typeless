@@ -22,12 +22,39 @@ package object xshapeless {
       type Out = R
       def apply(fs: F :: Fs, context: Context) =
         subset(context).map(args => fs.head.toProduct(args)).toSeq ++
-          applyContext(fs.tail, context).toSeq
+          applyContext(fs.tail, context)
     }
 
     implicit def hnil[Context <: HList, R]: ApplyAll.Aux[HNil, Context, R] = new ApplyAll[HNil, Context] {
       type Out = R
       def apply(fs: HNil, context: Context) = Seq.empty
+    }
+  }
+
+  trait ApplyAllSeqs[Fs <: HList, Context <: HList] {
+    type Out
+    def apply(fs: Fs, context: Context): Seq[Out]
+  }
+  object ApplyAllSeqs {
+    type Aux[Fs <: HList, Context <: HList, R] = ApplyAllSeqs[Fs, Context] { type Out = R }
+    implicit def hcons[Context <: HList, Fs <: HList, F, Args <: HList, R](context: Context)(fs: Seq[F] :: Fs)(
+      implicit
+      fp: FnToProduct.Aux[F, Args => R],
+      subset: Subset[Context, Args],
+      t: ApplyAllSeqs.Aux[Fs, Context, R]
+    ) = new ApplyAllSeqs[Seq[F] :: Fs, Context] {
+      type Out = R
+      def apply(fs: Seq[F] :: Fs, context: Context): Seq[Out] = {
+        val res = for {
+          f <- fs.head
+          args <- subset(context)
+        } yield f.toProduct(args)
+        res ++ t(fs.tail, context)
+      }
+    }
+    implicit def hnil[Context <: HList, R](context: Context)(fs: HNil) = new ApplyAllSeqs[HNil, Context] {
+      type Out = R
+      def apply(fs: HNil, context: Context): Seq[Out] = Seq.empty
     }
   }
 
