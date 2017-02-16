@@ -44,50 +44,33 @@ class ApplyAllSeqsTests extends FunSuite with Matchers {
     val generators =
       generators1 ::
         generators2 :: HNil
-
-    def features[Context <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
-      implicit
-      applyAll: ApplyAllSeqs.Aux[Fs, Context, R]
-    ): Seq[R] = applyAll(fs, context)
-
-    def features[Context <: Product, HContext <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
-      implicit
-      gen: Generic.Aux[Context, HContext],
-      applyAll: ApplyAllSeqs.Aux[Fs, HContext, R]
-    ): Seq[R] = applyAll(fs, gen.to(context))
-
-    def features[X, Fs <: HList, R](x: X)(fs: Fs)(
-      implicit
-      applyAll: ApplyAllSeqs.Aux[Fs, X :: HNil, R]
-    ): Seq[R] = applyAll(fs, x :: HNil)
-
   }
 
   val hi = "hi"
   test("single argument") {
     assert(
-      FeatureGenerators.features(hi)(FeatureGenerators.generators).isEmpty
+      SelectFunctionsSeq.runAll(hi)(FeatureGenerators.generators).isEmpty
     )
   }
   test("two arguments") {
     assert(
-      FeatureGenerators.features(hi, 1)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctionsSeq.runAll(hi, 1)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
   test("three arguments") {
     assert(
-      FeatureGenerators.features(hi, 1, 2d)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctionsSeq.runAll(hi, 1, 2d)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
   test("different three arguments") {
     assert(
-      FeatureGenerators.features(hi, 'a', 1)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctionsSeq.runAll(hi, 'a', 1)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
   test("four arguments in different order") {
     // the order of the arguments doesn't matter
     assert(
-      FeatureGenerators.features(hi, 2d, 1, 'a')(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctionsSeq.runAll(hi, 2d, 1, 'a')(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
 

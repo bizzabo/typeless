@@ -6,54 +6,70 @@ import ops.function._
 
 package object xshapeless {
 
-  trait ApplyAll[Fs <: HList, Context <: HList] {
+  trait SelectFunctions[Fs <: HList, Context <: HList] {
     type Out
     def apply(fs: Fs, context: Context): Seq[Out]
   }
 
-  object ApplyAll {
-    type Aux[Fs <: HList, Context <: HList, R] = ApplyAll[Fs, Context] { type Out = R }
+  object SelectFunctions {
+    type Aux[Fs <: HList, Context <: HList, R] = SelectFunctions[Fs, Context] { type Out = R }
     implicit def hcons[F, Fs <: HList, Context <: HList, Args <: HList, R](
       implicit
       fp: FnToProduct.Aux[F, Args => R],
       subset: Subset[Context, Args],
-      applyContext: ApplyAll.Aux[Fs, Context, R]
-    ): ApplyAll.Aux[F :: Fs, Context, R] = new ApplyAll[F :: Fs, Context] {
+      applyContext: SelectFunctions.Aux[Fs, Context, R]
+    ): SelectFunctions.Aux[F :: Fs, Context, R] = new SelectFunctions[F :: Fs, Context] {
       type Out = R
       def apply(fs: F :: Fs, context: Context) =
         subset(context).map(args => fs.head.toProduct(args)).toSeq ++
           applyContext(fs.tail, context)
     }
 
-    implicit def hnil[Context <: HList, R]: ApplyAll.Aux[HNil, Context, R] = new ApplyAll[HNil, Context] {
+    implicit def hnil[Context <: HList, R]: SelectFunctions.Aux[HNil, Context, R] = new SelectFunctions[HNil, Context] {
       type Out = R
       def apply(fs: HNil, context: Context) = Seq.empty
     }
+
+    def runAll[Context <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
+      implicit
+      selectFunctions: SelectFunctions.Aux[Fs, Context, R]
+    ): Seq[R] = selectFunctions(fs, context)
+
+    def runAll[Context <: Product, HContext <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
+      implicit
+      gen: Generic.Aux[Context, HContext],
+      selectFunctions: SelectFunctions.Aux[Fs, HContext, R]
+    ): Seq[R] = selectFunctions(fs, gen.to(context))
+
+    def runAll[X, Fs <: HList, R](x: X)(fs: Fs)(
+      implicit
+      selectFunctions: SelectFunctions.Aux[Fs, X :: HNil, R]
+    ): Seq[R] = selectFunctions(fs, x :: HNil)
   }
 
-  trait ApplyAllSeqs[Fs <: HList, Context <: HList] {
+  trait SelectFunctionsSeq[Fs <: HList, Context <: HList] {
     type Out
     def apply(fs: Fs, context: Context): Seq[Out]
   }
 
-  trait ApplyAllSeqs0 {
+  trait SelectFunctionsSeq0 {
     implicit def hconsNotFound[Context <: HList, Fs <: HList, F, R](
       implicit
-      t: ApplyAllSeqs.Aux[Fs, Context, R]
-    ): ApplyAllSeqs.Aux[F :: Fs, Context, R] = new ApplyAllSeqs[F :: Fs, Context] {
+      t: SelectFunctionsSeq.Aux[Fs, Context, R]
+    ): SelectFunctionsSeq.Aux[F :: Fs, Context, R] = new SelectFunctionsSeq[F :: Fs, Context] {
       type Out = R
       def apply(fs: F :: Fs, context: Context): Seq[Out] = t(fs.tail, context)
     }
   }
 
-  object ApplyAllSeqs extends ApplyAllSeqs0 {
-    type Aux[Fs <: HList, Context <: HList, R] = ApplyAllSeqs[Fs, Context] { type Out = R }
+  object SelectFunctionsSeq extends SelectFunctionsSeq0 {
+    type Aux[Fs <: HList, Context <: HList, R] = SelectFunctionsSeq[Fs, Context] { type Out = R }
     implicit def hcons[Context <: HList, Fs <: HList, F, Args <: HList, R, S[_]](
       implicit
       fp: FnToProduct.Aux[F, Args => R],
       subset: Subset[Context, Args],
-      t: ApplyAllSeqs.Aux[Fs, Context, R]
-    ): ApplyAllSeqs.Aux[Seq[F] :: Fs, Context, R] = new ApplyAllSeqs[Seq[F] :: Fs, Context] {
+      t: SelectFunctionsSeq.Aux[Fs, Context, R]
+    ): SelectFunctionsSeq.Aux[Seq[F] :: Fs, Context, R] = new SelectFunctionsSeq[Seq[F] :: Fs, Context] {
       type Out = R
       def apply(fs: Seq[F] :: Fs, context: Context): Seq[Out] = {
         val res = for {
@@ -63,10 +79,27 @@ package object xshapeless {
         res ++ t(fs.tail, context)
       }
     }
-    implicit def hnil[Context <: HList, R]: ApplyAllSeqs.Aux[HNil, Context, R] = new ApplyAllSeqs[HNil, Context] {
+    implicit def hnil[Context <: HList, R]: SelectFunctionsSeq.Aux[HNil, Context, R] = new SelectFunctionsSeq[HNil, Context] {
       type Out = R
       def apply(fs: HNil, context: Context): Seq[Out] = Seq.empty
     }
+
+    def runAll[Context <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
+      implicit
+      selectFunctions: SelectFunctionsSeq.Aux[Fs, Context, R]
+    ): Seq[R] = selectFunctions(fs, context)
+
+    def runAll[Context <: Product, HContext <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
+      implicit
+      gen: Generic.Aux[Context, HContext],
+      selectFunctions: SelectFunctionsSeq.Aux[Fs, HContext, R]
+    ): Seq[R] = selectFunctions(fs, gen.to(context))
+
+    def runAll[X, Fs <: HList, R](x: X)(fs: Fs)(
+      implicit
+      selectFunctions: SelectFunctionsSeq.Aux[Fs, X :: HNil, R]
+    ): Seq[R] = selectFunctions(fs, x :: HNil)
+
   }
 
   trait Find[L <: HList, A] {

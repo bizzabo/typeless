@@ -21,7 +21,7 @@ package test
 import org.scalatest._
 import shapeless._
 
-class ApplyAllTests extends FunSuite with Matchers {
+class SelectFunctionsTests extends FunSuite with Matchers {
   val featureGenerator1 = (x: String, i: Int, d: Double) => ("feature1" -> (d.toInt + i))
 
   val featureGenerator2 = (x: String, i: Int) => ("feature2" -> i)
@@ -41,50 +41,33 @@ class ApplyAllTests extends FunSuite with Matchers {
         featureGenerator3 ::
         featureGenerator3_1 ::
         featureGenerator4 :: HNil
-
-    def features[Context <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
-      implicit
-      applyAll: ApplyAll.Aux[Fs, Context, R]
-    ): Seq[R] = applyAll(fs, context)
-
-    def features[Context <: Product, HContext <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
-      implicit
-      gen: Generic.Aux[Context, HContext],
-      applyAll: ApplyAll.Aux[Fs, HContext, R]
-    ): Seq[R] = applyAll(fs, gen.to(context))
-
-    def features[X, Fs <: HList, R](x: X)(fs: Fs)(
-      implicit
-      applyAll: ApplyAll.Aux[Fs, X :: HNil, R]
-    ): Seq[R] = applyAll(fs, x :: HNil)
-
   }
 
   val hi = "hi"
   test("single argument") {
     assert(
-      FeatureGenerators.features(hi)(FeatureGenerators.generators) == Seq("string_size" -> 2)
+      SelectFunctions.runAll(hi)(FeatureGenerators.generators) == Seq("string_size" -> 2)
     )
   }
   test("two arguments") {
     assert(
-      FeatureGenerators.features(hi, 1)(FeatureGenerators.generators) == Seq("feature2" -> 1, "string_size" -> 2)
+      SelectFunctions.runAll(hi, 1)(FeatureGenerators.generators) == Seq("feature2" -> 1, "string_size" -> 2)
     )
   }
   test("three arguments") {
     assert(
-      FeatureGenerators.features(hi, 1, 2d)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "string_size" -> 2)
+      SelectFunctions.runAll(hi, 1, 2d)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "string_size" -> 2)
     )
   }
   test("different three arguments") {
     assert(
-      FeatureGenerators.features(hi, 'a', 1)(FeatureGenerators.generators) == Seq("feature2" -> 1, "feature3" -> 100, "feature3_1" -> 101, "string_size" -> 2)
+      SelectFunctions.runAll(hi, 'a', 1)(FeatureGenerators.generators) == Seq("feature2" -> 1, "feature3" -> 100, "feature3_1" -> 101, "string_size" -> 2)
     )
   }
   test("four arguments in different order") {
     // the order of the arguments doesn't matter
     assert(
-      FeatureGenerators.features(hi, 2d, 1, 'a')(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature3_1" -> 101, "string_size" -> 2)
+      SelectFunctions.runAll(hi, 2d, 1, 'a')(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature3_1" -> 101, "string_size" -> 2)
     )
   }
 
