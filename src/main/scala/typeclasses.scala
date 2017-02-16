@@ -52,26 +52,16 @@ package object xshapeless {
     def apply(fs: Fs, context: Context): Seq[Out]
   }
 
-  trait SelectFunctionsSeq0 {
-    implicit def hconsNotFound[Context <: HList, Fs <: HList, F, R](
-      implicit
-      t: SelectFunctionsSeq.Aux[Fs, Context, R]
-    ): SelectFunctionsSeq.Aux[F :: Fs, Context, R] = new SelectFunctionsSeq[F :: Fs, Context] {
-      type Out = R
-      def apply(fs: F :: Fs, context: Context): Seq[Out] = t(fs.tail, context)
-    }
-  }
-
-  object SelectFunctionsSeq extends SelectFunctionsSeq0 {
+  object SelectFunctionsSeq {
     type Aux[Fs <: HList, Context <: HList, R] = SelectFunctionsSeq[Fs, Context] { type Out = R }
-    implicit def hcons[Context <: HList, Fs <: HList, F, Args <: HList, R, S[_]](
+    implicit def hcons[Context <: HList, Fs <: HList, F, Args <: HList, R, S[Q] <: Seq[Q]](
       implicit
       fp: FnToProduct.Aux[F, Args => R],
       subset: Subset[Context, Args],
       t: SelectFunctionsSeq.Aux[Fs, Context, R]
-    ): SelectFunctionsSeq.Aux[Seq[F] :: Fs, Context, R] = new SelectFunctionsSeq[Seq[F] :: Fs, Context] {
+    ): SelectFunctionsSeq.Aux[S[F] :: Fs, Context, R] = new SelectFunctionsSeq[S[F] :: Fs, Context] {
       type Out = R
-      def apply(fs: Seq[F] :: Fs, context: Context): Seq[Out] = {
+      def apply(fs: S[F] :: Fs, context: Context): Seq[Out] = {
         val res = for {
           f <- fs.head
           args <- subset(context)
