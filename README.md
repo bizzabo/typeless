@@ -6,6 +6,18 @@ Shapeless is great, but it's lacking some typeclasses needed for our work, this 
 
 2 - `Subset[L <: HList,S <: HList]`, similar to `Find`, but for a group of elements, if **all** the elements of the  `S` are present in `L` it returns `Some[S]` otherwise `None`
 
-3 - `SelectFunctions[L <: HList, F <: HList]` if `F` is an `HList` of functions, it will evaluate all for which their arguments can be found in `L`
+3 - `SelectFunctions[L <: HList, F <: HList]` if `F` is an `HList` of functions, it will evaluate all for which their arguments can be found in `L`, and return the `HList` of the results
 
-4 - `SelectFunctionsSeq[L <: HList, F <: HList]` if `F` is an `HList` of `Seq` of functions, it will evaluate all for which their arguments can be found in `L`
+4 - `SelectFunctionsSeq[L <: HList, F <: HList]` if `F` is an `HList` of `Seq` of functions, it will evaluate all for which their arguments can be found in `L`, and return a `Seq[R]`
+
+## Getting started
+
+```scala
+libraryDependencies += "ai.x" %% "typeless" % "0.1.2"
+```
+
+Currently all operations are on `HLists`, and therefore the only useful import is:
+
+```scala
+import typeless.hlist._
+```
