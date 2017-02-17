@@ -23,7 +23,7 @@ import shapeless._
 import typeless.hlist._
 
 class SelectFunctionsTests extends FunSuite with Matchers {
-  val featureGenerator1 = (x: String, i: Int, d: Double) => ("feature1" -> (d.toInt + i))
+  val featureGenerator1 = (x: String, i: Int, d: Double) => ("feature1" -> d * i)
 
   val featureGenerator2 = (x: String, i: Int) => ("feature2" -> i)
 
@@ -47,28 +47,28 @@ class SelectFunctionsTests extends FunSuite with Matchers {
   val hi = "hi"
   test("single argument") {
     assert(
-      SelectFunctions.runAll(hi)(FeatureGenerators.generators) == Seq("string_size" -> 2)
+      SelectFunctions.runAll(hi)(FeatureGenerators.generators) == "string_size" -> 2 :: HNil
     )
   }
   test("two arguments") {
     assert(
-      SelectFunctions.runAll(hi, 1)(FeatureGenerators.generators) == Seq("feature2" -> 1, "string_size" -> 2)
+      SelectFunctions.runAll(hi, 1)(FeatureGenerators.generators) == "feature2" -> 1 :: "string_size" -> 2 :: HNil
     )
   }
   test("three arguments") {
     assert(
-      SelectFunctions.runAll(hi, 1, 2d)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "string_size" -> 2)
+      SelectFunctions.runAll(hi, 1, 2d)(FeatureGenerators.generators) == "feature1" -> 2.0 :: "feature2" -> 1 :: "string_size" -> 2 :: HNil
     )
   }
   test("different three arguments") {
     assert(
-      SelectFunctions.runAll(hi, 'a', 1)(FeatureGenerators.generators) == Seq("feature2" -> 1, "feature3" -> 100, "feature3_1" -> 101, "string_size" -> 2)
+      SelectFunctions.runAll(hi, 'a', 1)(FeatureGenerators.generators) == "feature2" -> 1 :: "feature3" -> 100 :: "feature3_1" -> 101 :: "string_size" -> 2 :: HNil
     )
   }
   test("four arguments in different order") {
     // the order of the arguments doesn't matter
     assert(
-      SelectFunctions.runAll(hi, 2d, 1, 'a')(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature3_1" -> 101, "string_size" -> 2)
+      SelectFunctions.runAll(hi, 2d, 1, 'a')(FeatureGenerators.generators) == "feature1" -> 2.0 :: "feature2" -> 1 :: "feature3" -> 100 :: "feature3_1" -> 101 :: "string_size" -> 2 :: HNil
     )
   }
 

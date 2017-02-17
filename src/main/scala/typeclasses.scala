@@ -8,44 +8,42 @@ import ops.function._
 package object hlist {
 
   trait SelectFunctions[Fs <: HList, Context <: HList] {
-    type Out
-    def apply(fs: Fs, context: Context): Seq[Out]
+    def apply(fs: Fs, context: Context): HList
   }
 
   object SelectFunctions {
-    type Aux[Fs <: HList, Context <: HList, R] = SelectFunctions[Fs, Context] { type Out = R }
     implicit def hcons[F, Fs <: HList, Context <: HList, Args <: HList, R](
       implicit
       fp: FnToProduct.Aux[F, Args => R],
       subset: Subset[Context, Args],
-      applyContext: SelectFunctions.Aux[Fs, Context, R]
-    ): SelectFunctions.Aux[F :: Fs, Context, R] = new SelectFunctions[F :: Fs, Context] {
-      type Out = R
+      applyContext: SelectFunctions[Fs, Context]
+    ): SelectFunctions[F :: Fs, Context] = new SelectFunctions[F :: Fs, Context] {
       def apply(fs: F :: Fs, context: Context) =
-        subset(context).map(args => fs.head.toProduct(args)).toSeq ++
-          applyContext(fs.tail, context)
+        subset(context).map(
+          args =>
+            fs.head.toProduct(args) :: applyContext(fs.tail, context)
+        ).getOrElse(applyContext(fs.tail, context))
     }
 
-    implicit def hnil[Context <: HList, R]: SelectFunctions.Aux[HNil, Context, R] = new SelectFunctions[HNil, Context] {
-      type Out = R
-      def apply(fs: HNil, context: Context) = Seq.empty
+    implicit def hnil[Context <: HList]: SelectFunctions[HNil, Context] = new SelectFunctions[HNil, Context] {
+      def apply(fs: HNil, context: Context) = HNil
     }
 
     def runAll[Context <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
       implicit
-      selectFunctions: SelectFunctions.Aux[Fs, Context, R]
-    ): Seq[R] = selectFunctions(fs, context)
+      selectFunctions: SelectFunctions[Fs, Context]
+    ) = selectFunctions(fs, context)
 
     def runAll[Context <: Product, HContext <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
       implicit
       gen: Generic.Aux[Context, HContext],
-      selectFunctions: SelectFunctions.Aux[Fs, HContext, R]
-    ): Seq[R] = selectFunctions(fs, gen.to(context))
+      selectFunctions: SelectFunctions[Fs, HContext]
+    ) = selectFunctions(fs, gen.to(context))
 
     def runAll[X, Fs <: HList, R](x: X)(fs: Fs)(
       implicit
-      selectFunctions: SelectFunctions.Aux[Fs, X :: HNil, R]
-    ): Seq[R] = selectFunctions(fs, x :: HNil)
+      selectFunctions: SelectFunctions[Fs, X :: HNil]
+    ) = selectFunctions(fs, x :: HNil)
   }
 
   trait SelectFunctionsSeq[Fs <: HList, Context <: HList] {
