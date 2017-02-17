@@ -32,46 +32,37 @@ class ApplyAllSeqsTests extends FunSuite with Matchers {
   //is possible to have generators with the same context, they will all be used
   val featureGenerator4 = (x: String, s: Char, i: Int) => ("feature4" -> (s.toInt + i * 2 + x.size))
 
-  object FeatureGenerators {
-
-    val generators1 = Seq(
-      featureGenerator1,
-      featureGenerator2
-    )
-    val generators2 = Seq(
-      featureGenerator3,
-      featureGenerator4
-    )
-    val generators =
-      generators1 ::
-        generators2 :: HNil
-  }
+  val generators =
+    featureGenerator1 ::
+      featureGenerator2 ::
+      featureGenerator3 ::
+      featureGenerator4 :: HNil
 
   val hi = "hi"
   test("single argument") {
     assert(
-      SelectFunctionsSeq.runAll(hi)(FeatureGenerators.generators).isEmpty
+      SelectFunctionsSeq.runAll(hi)(generators).isEmpty
     )
   }
   test("two arguments") {
     assert(
-      SelectFunctionsSeq.runAll(hi, 1)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctionsSeq.runAll(hi, 1)(generators) == Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
   test("three arguments") {
     assert(
-      SelectFunctionsSeq.runAll(hi, 1, 2d)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctionsSeq.runAll(hi, 1, 2d)(generators) == Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
   test("different three arguments") {
     assert(
-      SelectFunctionsSeq.runAll(hi, 'a', 1)(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctionsSeq.runAll(hi, 'a', 1)(generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
   test("four arguments in different order") {
     // the order of the arguments doesn't matter
     assert(
-      SelectFunctionsSeq.runAll(hi, 2d, 1, 'a')(FeatureGenerators.generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctionsSeq.runAll(hi, 2d, 1, 'a')(generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
 
