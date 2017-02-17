@@ -110,15 +110,11 @@ package object hlist {
         def apply(fs: HNil, args: Context) = Seq.empty
       }
 
-    implicit class Ops[Context <: Product, HContext <: HList, Fss <: HList](fs: Fss) {
-
-      def runAllSeq(args: Context)(
-        implicit
-        gen: Generic.Aux[Context, HContext],
-        applyEach: ApplyEachSeq[HContext, Fss]
-      ) = applyEach(fs, gen.to(args))
-
-    }
+    def runAll[Context <: Product, HContext <: HList, Fss <: HList](args: Context)(fs: Fss)(
+      implicit
+      gen: Generic.Aux[Context, HContext],
+      applyEach: ApplyEachSeq[HContext, Fss]
+    ) = applyEach(fs, gen.to(args))
   }
 
   trait Find[L <: HList, A] {

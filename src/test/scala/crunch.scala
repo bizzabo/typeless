@@ -86,10 +86,8 @@ class CrunchTests extends FunSuite with Matchers {
       ls ::
       HNil
 
-  import ApplyEachSeq.Ops
-
   test("apply all") {
-    val res: Seq[String] = all.runAllSeq(1, "a")
+    val res: Seq[String] = ApplyEachSeq.runAll(1, "a")(all)
     assert(res.distinct === Seq("1 + a"))
   }
 
