@@ -13,7 +13,7 @@ Shapeless is great, but it's lacking some typeclasses needed for our work, this 
 ## Getting started
 
 ```scala
-libraryDependencies += "ai.x" %% "typeless" % "0.1.2"
+libraryDependencies += "ai.x" %% "typeless" % "0.1.4"
 ```
 
 Currently all operations are on `HLists`, and therefore the only useful import is:
