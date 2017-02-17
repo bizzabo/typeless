@@ -53,19 +53,16 @@ package object hlist {
 
   object SelectFunctionsSeq {
     type Aux[Fs <: HList, Context <: HList, R] = SelectFunctionsSeq[Fs, Context] { type Out = R }
-    implicit def hcons[Context <: HList, Fs <: HList, F, Args <: HList, R, S[Q] <: Seq[Q]](
+    implicit def hcons[Context <: HList, Fs <: HList, F, Args <: HList, R](
       implicit
       fp: FnToProduct.Aux[F, Args => R],
       subset: Subset[Context, Args],
-      t: SelectFunctionsSeq.Aux[Fs, Context, R]
-    ): SelectFunctionsSeq.Aux[S[F] :: Fs, Context, R] = new SelectFunctionsSeq[S[F] :: Fs, Context] {
+      selectFunctionsTail: SelectFunctionsSeq.Aux[Fs, Context, R]
+    ): SelectFunctionsSeq.Aux[F :: Fs, Context, R] = new SelectFunctionsSeq[F :: Fs, Context] {
       type Out = R
-      def apply(fs: S[F] :: Fs, context: Context): Seq[Out] = {
-        val res = for {
-          f <- fs.head
-          args <- subset(context)
-        } yield f.toProduct(args)
-        res ++ t(fs.tail, context)
+      def apply(fs: F :: Fs, context: Context): Seq[Out] = {
+        subset(context).map(args => fs.head.toProduct(args)).toSeq ++
+          selectFunctionsTail(fs.tail, context)
       }
     }
     implicit def hnil[Context <: HList, R]: SelectFunctionsSeq.Aux[HNil, Context, R] = new SelectFunctionsSeq[HNil, Context] {
