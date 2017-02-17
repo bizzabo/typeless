@@ -1,4 +1,4 @@
-# x-shapeless
+# typeless
 
 Shapeless is great, but it's lacking some typeclasses needed for our work, this projects add them:
 
