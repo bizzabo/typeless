@@ -3,7 +3,7 @@ import Keys._
 
 object MyBuild extends Build{
   val repoKind = SettingKey[String]("repo-kind", "Maven repository kind (\"snapshots\" or \"releases\")")
-  val projectName = "x-shapeless"
+  val projectName = "typeless"
   lazy val aRootProject = Project(id = projectName, base = file("."),
     settings = Seq(
       version := "0.1.1",
