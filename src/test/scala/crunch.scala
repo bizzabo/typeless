@@ -36,9 +36,61 @@ class CrunchTests extends FunSuite with Matchers {
       { (i: Int, s: String) => s"$i + $s" } ::
       { (i: Int, s: String) => s"$i + $s" } ::
       HNil
+  val all =
+    ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      ls ::
+      HNil
+
+  import ApplyEachSeq.Ops
 
   test("apply all") {
-    SelectFunctions.runAll(1, "a")(ls)
+    val res: Seq[String] = all.runAllSeq(1, "a")
+    assert(res.distinct === Seq("1 + a"))
   }
 
 }

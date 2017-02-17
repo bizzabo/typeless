@@ -88,6 +88,39 @@ package object hlist {
 
   }
 
+  trait ApplyEachSeq[Context <: HList, Fss <: HList] {
+    type Out
+    def apply(fs: Fss, args: Context): Seq[Out]
+  }
+
+  object ApplyEachSeq {
+    type Aux[Context <: HList, Fss <: HList, R] = ApplyEachSeq[Context, Fss] { type Out = R }
+    implicit def hcons[Context <: HList, Fs <: HList, Fss <: HList, R](
+      implicit
+      selectFunctions: SelectFunctionsSeq.Aux[Fs, Context, R],
+      applyEach: ApplyEachSeq.Aux[Context, Fss, R]
+    ) = new ApplyEachSeq[Context, Fs :: Fss] {
+      type Out = R
+      def apply(fs: Fs :: Fss, args: Context) =
+        selectFunctions(fs.head, args) ++ applyEach(fs.tail, args)
+    }
+    implicit def hnil[Context <: HList, R] =
+      new ApplyEachSeq[Context, HNil] {
+        type Out = R
+        def apply(fs: HNil, args: Context) = Seq.empty
+      }
+
+    implicit class Ops[Context <: Product, HContext <: HList, Fss <: HList](fs: Fss) {
+
+      def runAllSeq(args: Context)(
+        implicit
+        gen: Generic.Aux[Context, HContext],
+        applyEach: ApplyEachSeq[HContext, Fss]
+      ) = applyEach(fs, gen.to(args))
+
+    }
+  }
+
   trait Find[L <: HList, A] {
     def find(l: L): Option[A]
   }
