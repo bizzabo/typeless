@@ -15,11 +15,12 @@
  */
 
 package ai.x
-package xshapeless
+package typeless
 package test
 
 import org.scalatest._
 import shapeless._
+import typeless.hlist._
 
 class SelectFunctionsTests extends FunSuite with Matchers {
   val featureGenerator1 = (x: String, i: Int, d: Double) => ("feature1" -> (d.toInt + i))

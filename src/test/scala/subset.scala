@@ -15,11 +15,12 @@
  */
 
 package ai.x
-package xshapeless
+package typeless
 package test
 
 import org.scalatest._
 import shapeless._
+import typeless.hlist._
 
 class SubsetTests extends FunSuite with Matchers {
 

@@ -1,10 +1,11 @@
 package ai.x
+package typeless
 
 import shapeless._
 import syntax.std.function._
 import ops.function._
 
-package object xshapeless {
+package object hlist {
 
   trait SelectFunctions[Fs <: HList, Context <: HList] {
     type Out
