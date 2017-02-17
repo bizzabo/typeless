@@ -23,16 +23,16 @@ import shapeless._
 import typeless.hlist._
 
 class SelectFunctionsTests extends FunSuite with Matchers {
-  val featureGenerator1 = (x: String, i: Int, d: Double) => ("feature1" -> d * i)
+  val featureGenerator1 = (x: String, i: Int, d: Double) => d.toInt * i
 
-  val featureGenerator2 = (x: String, i: Int) => ("feature2" -> i)
+  val featureGenerator2 = (x: String, i: Int) => s"$x + $i"
 
-  val featureGenerator3 = (x: String, s: Char, i: Int) => ("feature3" -> (s.toInt + i + x.size))
+  val featureGenerator3 = (x: String, s: Char, i: Int) => x + s + i.toChar
 
   //is possible to have generators with the same context, they will all be used
-  val featureGenerator3_1 = (x: String, s: Char, i: Int) => ("feature3_1" -> (s.toInt + i * 2 + x.size))
+  val featureGenerator3_1 = (x: String, s: Char, i: Int) => s.toInt + i * 2 + x.size
 
-  val featureGenerator4 = (x: String) => ("string_size" -> x.size)
+  val featureGenerator4 = (x: String) => "string_size" -> x.size
 
   object FeatureGenerators {
 
@@ -65,10 +65,11 @@ class SelectFunctionsTests extends FunSuite with Matchers {
       SelectFunctions.runAll(hi, 'a', 1)(FeatureGenerators.generators) == "feature2" -> 1 :: "feature3" -> 100 :: "feature3_1" -> 101 :: "string_size" -> 2 :: HNil
     )
   }
+
   test("four arguments in different order") {
     // the order of the arguments doesn't matter
     assert(
-      SelectFunctions.runAll(hi, 2d, 1, 'a')(FeatureGenerators.generators) == "feature1" -> 2.0 :: "feature2" -> 1 :: "feature3" -> 100 :: "feature3_1" -> 101 :: "string_size" -> 2 :: HNil
+      SelectFunctions.runAll(hi, 2d, 1, 'a')(FeatureGenerators.generators) === 2 :: "hi + 1" :: "hi1" :: 101 :: "string_size" -> 2 :: HNil
     )
   }
 

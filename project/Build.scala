@@ -21,7 +21,7 @@ object MyBuild extends Build{
         "-language:higherKinds",
         "-language:implicitConversions",
         "-unchecked"      ),
-      testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oFD"),
+      testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oSD"),
       organizationName := "x.ai",
       organization := "ai.x",
       scalacOptions in (Compile, doc) <++= (version,sourceDirectory in Compile,name).map((v,src,n) => Seq(
