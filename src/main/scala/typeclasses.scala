@@ -8,36 +8,36 @@ import ops.function._
 
 package object hlist {
 
-  /*takes an HList of functions and an HList of potential arguments
+  /* takes an HList of functions and an HList of potential arguments
    * it applies the arguments to the functions for which all the arguments are present
    * it return an HList with the results
    */
-  trait SelectFunctions[Fs <: HList, Context <: HList] {
+  trait SelectFunctions[FF <: HList, Context <: HList] {
     type Out <: HList
-    def apply(fs: Fs, context: Context): Out
+    def apply(fs: FF, context: Context): Out
   }
 
   trait SelectFunctions0 {
-    implicit def hconsNotFound[F, Fs <: HList, Context <: HList, Args <: HList, RT <: HList](
+    implicit def hconsNotFound[F, FF <: HList, Context <: HList, Args <: HList, RT <: HList](
       implicit
-      applyContext: SelectFunctions.Aux[Fs, Context, RT]
-    ): SelectFunctions.Aux[F :: Fs, Context, RT] = new SelectFunctions[F :: Fs, Context] {
+      applyContext: SelectFunctions.Aux[FF, Context, RT]
+    ): SelectFunctions.Aux[F :: FF, Context, RT] = new SelectFunctions[F :: FF, Context] {
       type Out = RT
-      def apply(fs: F :: Fs, context: Context) =
+      def apply(fs: F :: FF, context: Context) =
         applyContext(fs.tail, context)
     }
 
   }
   object SelectFunctions extends SelectFunctions0 {
-    type Aux[Fs <: HList, Context <: HList, R <: HList] = SelectFunctions[Fs, Context] { type Out = R }
-    implicit def hcons[F, Fs <: HList, Context <: HList, Args <: HList, R, RT <: HList](
+    type Aux[FF <: HList, Context <: HList, R <: HList] = SelectFunctions[FF, Context] { type Out = R }
+    implicit def hcons[F, FF <: HList, Context <: HList, Args <: HList, R, RT <: HList](
       implicit
       fp: FnToProduct.Aux[F, Args => R],
       subset: SelectAll[Context, Args],
-      applyContext: SelectFunctions.Aux[Fs, Context, RT]
-    ): SelectFunctions.Aux[F :: Fs, Context, R :: RT] = new SelectFunctions[F :: Fs, Context] {
+      applyContext: SelectFunctions.Aux[FF, Context, RT]
+    ): SelectFunctions.Aux[F :: FF, Context, R :: RT] = new SelectFunctions[F :: FF, Context] {
       type Out = R :: RT
-      def apply(fs: F :: Fs, context: Context) =
+      def apply(fs: F :: FF, context: Context) =
         fs.head.toProduct(subset(context)) :: applyContext(fs.tail, context)
     }
 
@@ -46,42 +46,42 @@ package object hlist {
       def apply(fs: HNil, context: Context) = HNil
     }
 
-    def runAll[Context <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
+    def runAll[Context <: HList, FF <: HList, R](context: Context)(fs: FF)(
       implicit
-      selectFunctions: SelectFunctions[Fs, Context]
+      selectFunctions: SelectFunctions[FF, Context]
     ) = selectFunctions(fs, context)
 
-    def runAll[Context <: Product, HContext <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
+    def runAll[Context <: Product, HContext <: HList, FF <: HList, R](context: Context)(fs: FF)(
       implicit
       gen: Generic.Aux[Context, HContext],
-      selectFunctions: SelectFunctions[Fs, HContext]
+      selectFunctions: SelectFunctions[FF, HContext]
     ) = selectFunctions(fs, gen.to(context))
 
-    def runAll[X, Fs <: HList, R](x: X)(fs: Fs)(
+    def runAll[X, FF <: HList, R](x: X)(fs: FF)(
       implicit
-      selectFunctions: SelectFunctions[Fs, X :: HNil]
+      selectFunctions: SelectFunctions[FF, X :: HNil]
     ) = selectFunctions(fs, x :: HNil)
   }
 
-  /*takes an HList of functions, which all return the same type, and an HList of potential arguments
+  /* takes an HList of functions, which all return the same type, and an HList of potential arguments
    * it applies the arguments to the functions for which all the arguments are present
    * it return an Seq with the results
    */
-  trait SelectFunctionsSeq[Fs <: HList, Context <: HList] {
+  trait SelectFunctionsSeq[FF <: HList, Context <: HList] {
     type Out
-    def apply(fs: Fs, context: Context): Seq[Out]
+    def apply(fs: FF, context: Context): Seq[Out]
   }
 
   object SelectFunctionsSeq {
-    type Aux[Fs <: HList, Context <: HList, R] = SelectFunctionsSeq[Fs, Context] { type Out = R }
-    implicit def hcons[Context <: HList, Fs <: HList, F, Args <: HList, R](
+    type Aux[FF <: HList, Context <: HList, R] = SelectFunctionsSeq[FF, Context] { type Out = R }
+    implicit def hcons[Context <: HList, FF <: HList, F, Args <: HList, R](
       implicit
       fp: FnToProduct.Aux[F, Args => R],
       subset: Subset[Context, Args],
-      selectFunctionsTail: SelectFunctionsSeq.Aux[Fs, Context, R]
-    ): SelectFunctionsSeq.Aux[F :: Fs, Context, R] = new SelectFunctionsSeq[F :: Fs, Context] {
+      selectFunctionsTail: SelectFunctionsSeq.Aux[FF, Context, R]
+    ): SelectFunctionsSeq.Aux[F :: FF, Context, R] = new SelectFunctionsSeq[F :: FF, Context] {
       type Out = R
-      def apply(fs: F :: Fs, context: Context): Seq[Out] = {
+      def apply(fs: F :: FF, context: Context): Seq[Out] = {
         subset(context).map(args => fs.head.toProduct(args)).toSeq ++
           selectFunctionsTail(fs.tail, context)
       }
@@ -91,42 +91,42 @@ package object hlist {
       def apply(fs: HNil, context: Context): Seq[Out] = Seq.empty
     }
 
-    def runAll[Context <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
+    def runAll[Context <: HList, FF <: HList, R](context: Context)(fs: FF)(
       implicit
-      selectFunctions: SelectFunctionsSeq.Aux[Fs, Context, R]
+      selectFunctions: SelectFunctionsSeq.Aux[FF, Context, R]
     ): Seq[R] = selectFunctions(fs, context)
 
-    def runAll[Context <: Product, HContext <: HList, Fs <: HList, R](context: Context)(fs: Fs)(
+    def runAll[Context <: Product, HContext <: HList, FF <: HList, R](context: Context)(fs: FF)(
       implicit
       gen: Generic.Aux[Context, HContext],
-      selectFunctions: SelectFunctionsSeq.Aux[Fs, HContext, R]
+      selectFunctions: SelectFunctionsSeq.Aux[FF, HContext, R]
     ): Seq[R] = selectFunctions(fs, gen.to(context))
 
-    def runAll[X, Fs <: HList, R](x: X)(fs: Fs)(
+    def runAll[X, FF <: HList, R](x: X)(fs: FF)(
       implicit
-      selectFunctions: SelectFunctionsSeq.Aux[Fs, X :: HNil, R]
+      selectFunctions: SelectFunctionsSeq.Aux[FF, X :: HNil, R]
     ): Seq[R] = selectFunctions(fs, x :: HNil)
 
   }
 
-  /*takes an HList of HLists of functions, which all return the same type, and an HList of potential arguments
-   * it applies the arguments to the functions for which all the arguments are present
-   * it return an Seq with the results
+  /* takes an HList of HLists FFF of functions and an HList of potential arguments Context, 
+   * it uses SelectFunctionsSeq[Context, FF] (FF is an HList of functions) to calculate Seq[R]. 
+   * Meaning all functions most return the same type R. 
    */
-  trait ApplyEachSeq[Context <: HList, Fss <: HList] {
+  trait ApplyEachSeq[Context <: HList, FFF <: HList] {
     type Out
-    def apply(fs: Fss, args: Context): Seq[Out]
+    def apply(fs: FFF, args: Context): Seq[Out]
   }
 
   object ApplyEachSeq {
-    type Aux[Context <: HList, Fss <: HList, R] = ApplyEachSeq[Context, Fss] { type Out = R }
-    implicit def hcons[Context <: HList, Fs <: HList, Fss <: HList, R](
+    type Aux[Context <: HList, FFF <: HList, R] = ApplyEachSeq[Context, FFF] { type Out = R }
+    implicit def hcons[Context <: HList, FF <: HList, FFF <: HList, R](
       implicit
-      selectFunctions: SelectFunctionsSeq.Aux[Fs, Context, R],
-      applyEach: ApplyEachSeq.Aux[Context, Fss, R]
-    ) = new ApplyEachSeq[Context, Fs :: Fss] {
+      selectFunctions: SelectFunctionsSeq.Aux[FF, Context, R],
+      applyEach: ApplyEachSeq.Aux[Context, FFF, R]
+    ) = new ApplyEachSeq[Context, FF :: FFF] {
       type Out = R
-      def apply(fs: Fs :: Fss, args: Context) =
+      def apply(fs: FF :: FFF, args: Context) =
         selectFunctions(fs.head, args) ++ applyEach(fs.tail, args)
     }
     implicit def hnil[Context <: HList, R] =
@@ -135,13 +135,18 @@ package object hlist {
         def apply(fs: HNil, args: Context) = Seq.empty
       }
 
-    def runAll[Context <: Product, HContext <: HList, Fss <: HList](args: Context)(fs: Fss)(
+    def runAll[Context <: Product, HContext <: HList, FFF <: HList](args: Context)(fs: FFF)(
       implicit
       gen: Generic.Aux[Context, HContext],
-      applyEach: ApplyEachSeq[HContext, Fss]
+      applyEach: ApplyEachSeq[HContext, FFF]
     ) = applyEach(fs, gen.to(args))
   }
 
+  /*
+   * "tries" to find A in L,
+   * if A is present it returns Some[A], 
+   * otherwise it returns None
+   */
   trait Find[L <: HList, A] {
     def find(l: L): Option[A]
   }
@@ -163,6 +168,11 @@ package object hlist {
   }
   import Find.Ops
 
+  /*
+   * "tries" to find all elements of S in L,
+   * if all elements are  present it returns Some[S], 
+   * otherwise it returns None
+   */
   trait Subset[L <: HList, S <: HList] {
     def apply(l: L): Option[S]
   }
