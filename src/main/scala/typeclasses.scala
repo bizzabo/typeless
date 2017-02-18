@@ -64,6 +64,9 @@ package object hlist {
     ) = selectFunctions(fs, x :: HNil)
   }
 
+  /* takes an HList of HLists of functions and an HList of potential arguments, 
+ * and uses SelectFunctions[Context, FF] to calculate the resulting HList
+ */
   trait FlattenFunctions[Context <: HList, FFF <: HList] {
     type Out <: HList
     def apply(fs: FFF, args: Context): Out
