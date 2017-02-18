@@ -1,6 +1,6 @@
 # typeless
 
-This is the home for some to some typeclasses that might not make it to shapeless itself.
+These are some typeclasses inspired and powered by shapeless
 
 1- `Find[L <: HList, A]`: Will allow to find a type `A` in an `HList` `L`, if the type is not present it returns `None`, otherwise `Some[A]`
 
