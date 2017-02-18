@@ -55,7 +55,8 @@ class SelectFunctionsTests extends FunSuite with Matchers {
   }
   test("two arguments") {
     assert(
-      SelectFunctions.runAll(hi, 1)(FeatureGenerators.generators) == "hi + 1" :: 2 :: HNil
+      SelectFunctions.runAll(1, hi)(FeatureGenerators.generators) == "hi + 1" :: 2 :: HNil
+
     )
   }
   test("three arguments") {

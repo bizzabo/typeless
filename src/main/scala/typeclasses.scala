@@ -2,30 +2,43 @@ package ai.x
 package typeless
 
 import shapeless._
+import ops.hlist.SelectAll
 import syntax.std.function._
 import ops.function._
 
 package object hlist {
 
   trait SelectFunctions[Fs <: HList, Context <: HList] {
-    def apply(fs: Fs, context: Context): HList
+    type Out <: HList
+    def apply(fs: Fs, context: Context): Out
   }
 
-  object SelectFunctions {
-    implicit def hcons[F, Fs <: HList, Context <: HList, Args <: HList, R](
+  trait SelectFunctions0 {
+    implicit def hconsNotFound[F, Fs <: HList, Context <: HList, Args <: HList, RT <: HList](
       implicit
-      fp: FnToProduct.Aux[F, Args => R],
-      subset: Subset[Context, Args],
-      applyContext: SelectFunctions[Fs, Context]
-    ): SelectFunctions[F :: Fs, Context] = new SelectFunctions[F :: Fs, Context] {
+      applyContext: SelectFunctions.Aux[Fs, Context, RT]
+    ): SelectFunctions.Aux[F :: Fs, Context, RT] = new SelectFunctions[F :: Fs, Context] {
+      type Out = RT
       def apply(fs: F :: Fs, context: Context) =
-        subset(context).map(
-          args =>
-            fs.head.toProduct(args) :: applyContext(fs.tail, context)
-        ).getOrElse(applyContext(fs.tail, context))
+        applyContext(fs.tail, context)
     }
 
-    implicit def hnil[Context <: HList]: SelectFunctions[HNil, Context] = new SelectFunctions[HNil, Context] {
+  }
+  object SelectFunctions extends SelectFunctions0 {
+    type Aux[Fs <: HList, Context <: HList, R <: HList] = SelectFunctions[Fs, Context] { type Out = R }
+    implicit def hcons[F, Fs <: HList, Context <: HList, Args <: HList, R, RT <: HList](
+      implicit
+      fp: FnToProduct.Aux[F, Args => R],
+      subset: SelectAll[Context, Args],
+      applyContext: SelectFunctions.Aux[Fs, Context, RT]
+    ): SelectFunctions.Aux[F :: Fs, Context, R :: RT] = new SelectFunctions[F :: Fs, Context] {
+      type Out = R :: RT
+      def apply(fs: F :: Fs, context: Context) =
+        fs.head.toProduct(subset(context)) :: applyContext(fs.tail, context)
+    }
+
+    implicit def hnil[Context <: HList]: SelectFunctions.Aux[HNil, Context, HNil] = new SelectFunctions[HNil, Context] {
+      type Out = HNil
       def apply(fs: HNil, context: Context) = HNil
     }
 
