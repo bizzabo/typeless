@@ -66,7 +66,7 @@ ApplyEachSeq.runAll(hi, 1)(functions) === Seq("feature1" -> 3, "feature2" -> 1)
 ## Getting started
 
 ```scala
-libraryDependencies += "ai.x" %% "typeless" % "0.1.4"
+libraryDependencies += "ai.x" %% "typeless" % "0.1.5"
 ```
 
 Currently all operations are on `HLists`, and therefore the only useful import is:
