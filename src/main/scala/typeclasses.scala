@@ -3,6 +3,7 @@ package typeless
 
 import shapeless._
 import ops.hlist.SelectAll
+import ops.adjoin.Adjoin
 import syntax.std.function._
 import ops.function._
 
@@ -63,6 +64,47 @@ package object hlist {
     ) = selectFunctions(fs, x :: HNil)
   }
 
+  trait FlattenFunctions[Context <: HList, FFF <: HList] {
+    type Out <: HList
+    def apply(fs: FFF, args: Context): Out
+  }
+
+  trait FlattenFunctions0 {
+    implicit def hcons[Context <: HList, FF <: HList, FFF <: HList, SR <: HList](
+      implicit
+      flattenFunctions: FlattenFunctions.Aux[Context, FFF, SR]
+    ): FlattenFunctions.Aux[Context, FF :: FFF, SR] = new FlattenFunctions[Context, FF :: FFF] {
+      type Out = SR
+      def apply(fs: FF :: FFF, args: Context) =
+        flattenFunctions(fs.tail, args)
+    }
+  }
+
+  object FlattenFunctions extends FlattenFunctions0 {
+    type Aux[Context <: HList, FFF <: HList, R <: HList] = FlattenFunctions[Context, FFF] { type Out = R }
+    implicit def hcons[Context <: HList, FF <: HList, FFF <: HList, R <: HList, SR <: HList](
+      implicit
+      selectFunctions: SelectFunctions.Aux[FF, Context, R],
+      flattenFunctions: FlattenFunctions.Aux[Context, FFF, SR]
+    ): FlattenFunctions.Aux[Context, FF :: FFF, R :: SR] = new FlattenFunctions[Context, FF :: FFF] {
+      type Out = R :: SR
+      def apply(fs: FF :: FFF, args: Context) =
+        selectFunctions(fs.head, args) :: flattenFunctions(fs.tail, args)
+    }
+    implicit def hnil[Context <: HList]: FlattenFunctions.Aux[Context, HNil, HNil] =
+      new FlattenFunctions[Context, HNil] {
+        type Out = HNil
+        def apply(fs: HNil, args: Context) = HNil
+      }
+
+    def runAll[Context <: Product, HContext <: HList, FFF <: HList, RR <: HList](args: Context)(fs: FFF)(
+      implicit
+      gen: Generic.Aux[Context, HContext],
+      flattenFunctions: FlattenFunctions.Aux[HContext, FFF, RR],
+      adj: Adjoin[RR]
+    ) = flattenFunctions(fs, gen.to(args)).adjoined
+  }
+
   /* takes an HList of functions, which all return the same type, and an HList of potential arguments
    * it applies the arguments to the functions for which all the arguments are present
    * it return an Seq with the results
@@ -113,33 +155,33 @@ package object hlist {
    * it uses SelectFunctionsSeq[Context, FF] (FF is an HList of functions) to calculate Seq[R]. 
    * Meaning all functions most return the same type R. 
    */
-  trait ApplyEachSeq[Context <: HList, FFF <: HList] {
+  trait FlattenFunctionsSeq[Context <: HList, FFF <: HList] {
     type Out
     def apply(fs: FFF, args: Context): Seq[Out]
   }
 
-  object ApplyEachSeq {
-    type Aux[Context <: HList, FFF <: HList, R] = ApplyEachSeq[Context, FFF] { type Out = R }
+  object FlattenFunctionsSeq {
+    type Aux[Context <: HList, FFF <: HList, R] = FlattenFunctionsSeq[Context, FFF] { type Out = R }
     implicit def hcons[Context <: HList, FF <: HList, FFF <: HList, R](
       implicit
       selectFunctions: SelectFunctionsSeq.Aux[FF, Context, R],
-      applyEach: ApplyEachSeq.Aux[Context, FFF, R]
-    ) = new ApplyEachSeq[Context, FF :: FFF] {
+      flattenFunctions: FlattenFunctionsSeq.Aux[Context, FFF, R]
+    ) = new FlattenFunctionsSeq[Context, FF :: FFF] {
       type Out = R
       def apply(fs: FF :: FFF, args: Context) =
-        selectFunctions(fs.head, args) ++ applyEach(fs.tail, args)
+        selectFunctions(fs.head, args) ++ flattenFunctions(fs.tail, args)
     }
     implicit def hnil[Context <: HList, R] =
-      new ApplyEachSeq[Context, HNil] {
+      new FlattenFunctionsSeq[Context, HNil] {
         type Out = R
         def apply(fs: HNil, args: Context) = Seq.empty
       }
 
-    def runAll[Context <: Product, HContext <: HList, FFF <: HList](args: Context)(fs: FFF)(
+    def runAll[Context <: Product, HContext <: HList, FFF <: HList, R](args: Context)(fs: FFF)(
       implicit
       gen: Generic.Aux[Context, HContext],
-      applyEach: ApplyEachSeq[HContext, FFF]
-    ) = applyEach(fs, gen.to(args))
+      flattenFunctions: FlattenFunctionsSeq.Aux[HContext, FFF, R]
+    ): Seq[R] = flattenFunctions(fs, gen.to(args))
   }
 
   /*

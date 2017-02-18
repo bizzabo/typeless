@@ -38,23 +38,23 @@ class ApplyAllSeqsTests extends FunSuite with Matchers {
   }
   test("two arguments") {
     assert(
-      SelectFunctionsSeq.runAll(hi, 1)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctionsSeq.runAll(hi, 1)(functions) === Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
   test("three arguments") {
     assert(
-      SelectFunctionsSeq.runAll(hi, 1, 2d)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctionsSeq.runAll(hi, 1, 2d)(functions) === Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
   test("different three arguments") {
     assert(
-      SelectFunctionsSeq.runAll(hi, 'a', 1)(functions) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctionsSeq.runAll(hi, 'a', 1)(functions) === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
   test("four arguments in different order") {
     // the order of the arguments doesn't matter
     assert(
-      SelectFunctionsSeq.runAll(hi, 2d, 1, 'a')(functions) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctionsSeq.runAll(hi, 2d, 1, 'a')(functions) === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
 

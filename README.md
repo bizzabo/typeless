@@ -42,25 +42,48 @@ SelectFunctionsSeq.runAll(hi, 1)(functions) == Seq("feature1" -> 3, "feature2" -
 SelectFunctionsSeq.runAll(hi, 1, 2d)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
  ```
 
-5 - `ApplyEachSeq[Context <: HList, FFF <: HList]`: Takes an `HList` of `HLists` of functions and an `HList` of potential arguments, and uses `SelectFunctionsSeq[Context, FF]` to calculate `Seq[R]`. Meaning all functions most return the same type `R`.
+
+5 - `FlattenFunctions[Context <: HList, FFF <: HList]`: Takes an `HList` of `HLists` of functions and an `HList` of potential arguments, and uses `SelectFunctions[Context, FF]` to calculate the resulting `HList`.
+
+#### example
+
+```scala
+ val functions1 =
+      { (x: String, i: Int) => (x.size + i) } ::
+        { (x: String, s: Char, i: Int) => (s.toInt + i * 2 + x.size) } ::
+        HNil
+val functions2 =
+      { (x: String, s: Char, i: Int) => (s.toInt + i + x.size) } ::
+        { (i: Int) => i.toDouble } ::
+        HNil
+
+val functions = functions1 ::
+      functions2 ::
+      HNil
+
+FlattenFunctions.runAll(1, "a")(functions) === 2 :: 1.0 :: HNil
+```
+
+
+5 - `FlattenFunctionsSeq[Context <: HList, FFF <: HList]`: Takes an `HList` of `HLists` of functions and an `HList` of potential arguments, and uses `SelectFunctionsSeq[Context, FF]` to calculate `Seq[R]`. Meaning all functions most return the same type `R`.
 
 #### example
 
 ```scala
 val functions1 =
-    { (x: String, i: Int) => ("feature1" -> (x.size + i)) } ::
-      { (x: String, i: Int) => ("feature2" -> i) } ::
-      HNil
-val functions2 = 
-    { (x: String, s: Char, i: Int) => ("feature3" -> (s.toInt + i + x.size)) } ::
-      { (x: String, s: Char, i: Int) => ("feature4" -> (s.toInt + i * 2 + x.size)) } ::
-      HNil
+      { (x: String, i: Int) => (x.size + i) } ::
+        { (x: String, s: Char, i: Int) => (s.toInt + i * 2 + x.size) } ::
+        HNil
+val functions2 =
+      { (x: String, s: Char, i: Int) => (s.toInt + i + x.size) } ::
+        { (i: Int) => i } ::
+        HNil
 
 val functions = functions1 ::
-                  functions2 ::
-                  HNil
+      functions2 ::
+      HNil
 
-ApplyEachSeq.runAll(hi, 1)(functions) === Seq("feature1" -> 3, "feature2" -> 1)
+FlattenFunctionsSeq.runAll(1, "a")(functions) === Seq(2, 1)
 ```
 
 ## Getting started

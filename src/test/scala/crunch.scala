@@ -23,6 +23,45 @@ import shapeless._
 import typeless.hlist._
 
 class CrunchTests extends FunSuite with Matchers {
+
+  test("FlattenFunctionsSeq") {
+    val functions1 =
+      { (x: String, i: Int) => (x.size + i) } ::
+        { (x: String, s: Char, i: Int) => (s.toInt + i * 2 + x.size) } ::
+        HNil
+    val functions2 =
+      { (x: String, s: Char, i: Int) => (s.toInt + i + x.size) } ::
+        { (i: Int) => i } ::
+        HNil
+
+    val functions = functions1 ::
+      functions2 ::
+      HNil
+    val res: Seq[Int] = FlattenFunctionsSeq.runAll(1, "a")(functions)
+    assert(
+      res === Seq(2, 1)
+    )
+  }
+
+  test("FlattenFunctions") {
+    val functions1 =
+      { (x: String, i: Int) => (x.size + i) } ::
+        { (x: String, s: Char, i: Int) => (s.toInt + i * 2 + x.size) } ::
+        HNil
+    val functions2 =
+      { (x: String, s: Char, i: Int) => (s.toInt + i + x.size) } ::
+        { (i: Int) => i.toDouble } ::
+        HNil
+
+    val functions = functions1 ::
+      functions2 ::
+      HNil
+    val res = FlattenFunctions.runAll(1, "a")(functions)
+    assert(
+      res === 2 :: 1.0 :: HNil
+    )
+  }
+
   val ls =
     { (i: Int, s: String) => s"$i + $s" } ::
       { (i: Int, s: String) => s"$i + $s" } ::
@@ -81,8 +120,13 @@ class CrunchTests extends FunSuite with Matchers {
       HNil
 
   test("apply all") {
-    val res: Seq[String] = ApplyEachSeq.runAll(1, "a")(all)
+    val res: Seq[String] = FlattenFunctionsSeq.runAll(1, "a")(all)
     assert(res.distinct === Seq("1 + a"))
+  }
+
+  test("apply all Hlist") {
+    val res = FlattenFunctions.runAll(1, "a")(all)
+    assert(res.runtimeList.map(_.asInstanceOf[String]).distinct === List("1 + a"))
   }
 
 }

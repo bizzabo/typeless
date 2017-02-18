@@ -35,23 +35,23 @@ class SelectFunctionsTests extends FunSuite with Matchers {
   val hi = "hi"
   test("single argument") {
     assert(
-      SelectFunctions.runAll(hi)(functions) == 2 :: HNil
+      SelectFunctions.runAll(hi)(functions) === 2 :: HNil
     )
   }
   test("two arguments") {
     assert(
-      SelectFunctions.runAll(1, hi)(functions) == "hi + 1" :: 2 :: HNil
+      SelectFunctions.runAll(1, hi)(functions) === "hi + 1" :: 2 :: HNil
 
     )
   }
   test("three arguments") {
     assert(
-      SelectFunctions.runAll(hi, 1, 2d)(functions) == 2 :: "hi + 1" :: 2 :: HNil
+      SelectFunctions.runAll(hi, 1, 2d)(functions) === 2 :: "hi + 1" :: 2 :: HNil
     )
   }
   test("different three arguments") {
     assert(
-      SelectFunctions.runAll(hi, 'a', 1)(functions) == "hi + 1" :: 1.0 :: 101 :: 2 :: 97 :: HNil
+      SelectFunctions.runAll(hi, 'a', 1)(functions) === "hi + 1" :: 1.0 :: 101 :: 2 :: 97 :: HNil
     )
   }
 
