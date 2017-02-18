@@ -35,37 +35,31 @@ class CrunchTests extends FunSuite with Matchers {
       { (i: Int, s: String) => s"$i + $s" } ::
       { (i: Int, s: String) => s"$i + $s" } ::
       { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
+      { (i: Int, s: String) => s"$i + $s" } ::
       HNil
   val all =
     ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
-      ls ::
       ls ::
       ls ::
       ls ::

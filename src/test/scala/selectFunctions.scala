@@ -36,51 +36,41 @@ class SelectFunctionsTests extends FunSuite with Matchers {
 
   val featureGenerator5 = (x: Char) => x.toInt
 
-  object FeatureGenerators {
-
-    val generators =
-      featureGenerator1 ::
-        featureGenerator2 ::
-        featureGenerator3 ::
-        featureGenerator3_1 ::
-        featureGenerator4 ::
-        featureGenerator5 :: HNil
-  }
+  val generators =
+    featureGenerator1 ::
+      featureGenerator2 ::
+      featureGenerator3 ::
+      featureGenerator3_1 ::
+      featureGenerator4 ::
+      featureGenerator5 :: HNil
 
   val hi = "hi"
   test("single argument") {
     assert(
-      SelectFunctions.runAll(hi)(FeatureGenerators.generators) == 2 :: HNil
+      SelectFunctions.runAll(hi)(generators) == 2 :: HNil
     )
   }
   test("two arguments") {
     assert(
-      SelectFunctions.runAll(1, hi)(FeatureGenerators.generators) == "hi + 1" :: 2 :: HNil
+      SelectFunctions.runAll(1, hi)(generators) == "hi + 1" :: 2 :: HNil
 
     )
   }
   test("three arguments") {
     assert(
-      SelectFunctions.runAll(hi, 1, 2d)(FeatureGenerators.generators) == 2 :: "hi + 1" :: 2 :: HNil
+      SelectFunctions.runAll(hi, 1, 2d)(generators) == 2 :: "hi + 1" :: 2 :: HNil
     )
   }
   test("different three arguments") {
     assert(
-      SelectFunctions.runAll(hi, 'a', 1)(FeatureGenerators.generators) == "hi + 1" :: 1.0 :: 101 :: 2 :: 97 :: HNil
+      SelectFunctions.runAll(hi, 'a', 1)(generators) == "hi + 1" :: 1.0 :: 101 :: 2 :: 97 :: HNil
     )
   }
 
   test("four arguments in different order") {
     // the order of the arguments doesn't matter
     assert(
-      SelectFunctions.runAll(hi, 2d, 1, 'a')(FeatureGenerators.generators) === 2 :: "hi + 1" :: 1.0 :: 101 :: 2 :: 97 :: HNil
-    )
-  }
-
-  test("get a Seq") {
-    val res: Seq[Int] = SelectFunctions.runAll(hi, 'a')(FeatureGenerators.generators).runtimeList.map(_.asInstanceOf[Int])
-    assert(
-      res == Seq(2, 97)
+      SelectFunctions.runAll(hi, 2d, 1, 'a')(generators) === 2 :: "hi + 1" :: 1.0 :: 101 :: 2 :: 97 :: HNil
     )
   }
 
