@@ -16,7 +16,7 @@ object MyBuild extends Build{
       ),
       resolvers ++= Seq(Resolver.sonatypeRepo("releases"),Resolver.sonatypeRepo("snapshots")),
       scalacOptions ++= Seq(
-        "-Xlog-implicits",
+//        "-Xlog-implicits",
         "-feature",
         "-language:higherKinds",
         "-language:implicitConversions",
