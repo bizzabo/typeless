@@ -8,6 +8,10 @@ import ops.function._
 
 package object hlist {
 
+  /*takes an HList of functions and an HList of potential arguments
+   * it applies the arguments to the functions for which all the arguments are present
+   * it return an HList with the results
+   */
   trait SelectFunctions[Fs <: HList, Context <: HList] {
     type Out <: HList
     def apply(fs: Fs, context: Context): Out
@@ -59,6 +63,10 @@ package object hlist {
     ) = selectFunctions(fs, x :: HNil)
   }
 
+  /*takes an HList of functions, which all return the same type, and an HList of potential arguments
+   * it applies the arguments to the functions for which all the arguments are present
+   * it return an Seq with the results
+   */
   trait SelectFunctionsSeq[Fs <: HList, Context <: HList] {
     type Out
     def apply(fs: Fs, context: Context): Seq[Out]
@@ -101,6 +109,10 @@ package object hlist {
 
   }
 
+  /*takes an HList of HLists of functions, which all return the same type, and an HList of potential arguments
+   * it applies the arguments to the functions for which all the arguments are present
+   * it return an Seq with the results
+   */
   trait ApplyEachSeq[Context <: HList, Fss <: HList] {
     type Out
     def apply(fs: Fss, args: Context): Seq[Out]
