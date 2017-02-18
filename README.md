@@ -2,11 +2,18 @@
 
 These are some typeclasses inspired and powered by shapeless
 
-1- `Find[L <: HList, A]`: Will allow to find a type `A` in an `HList` `L`, if the type is not present it returns `None`, otherwise `Some[A]`
+#### `Find[L <: HList, A]`
 
-2 - `Subset[L <: HList,S <: HList]`: Similar to `Find`, but for a group of elements, if **all** the elements of the  `S` are present in `L` it returns `Some[S]` otherwise `None`
+Will allow to find a type `A` in an `HList` `L`, if the type is not present it returns `None`, otherwise `Some[A]`
 
-3 - `SelectFunctions[L <: HList, FF <: HList]`: Takes an `HList` of functions `FF` and an `HList` of potential arguments `Context`. It applies the arguments to the functions for which all the arguments are present. It returns an `HList` with the results
+#### `Subset[L <: HList,S <: HList]`
+
+Similar to `Find`, but for a group of elements, if **all** the elements of the  `S` are present in `L` it returns `Some[S]` otherwise `None`
+
+#### `SelectFunctions[L <: HList, FF <: HList]`
+
+Takes an `HList` of functions `FF` and an `HList` of potential arguments `Context`. It applies the arguments to the functions for which all the arguments are present. It returns an `HList` with the results
+
 #### example
 
 ```scala
@@ -24,7 +31,9 @@ SelectFunctions.runAll(hi, 1, 2d)(functions) == 2 :: "hi + 1" :: 2 :: HNil
 SelectFunctions.runAll(hi, 'a', 1)(functions) == "hi + 1" :: 1.0 :: 101 :: 2 :: 97 :: HNil
 ```
 
-4 - `SelectFunctionsSeq[L <: HList, FF <: HList]`: Takes an `HList` `FF` of functions, which all return the same type `R`, and an `HList` of potential arguments `Context`. It applies the arguments to the functions for which all the arguments are present. It return an `Seq[R]` with the results.
+#### `SelectFunctionsSeq[L <: HList, FF <: HList]`
+
+Takes an `HList` `FF` of functions, which all return the same type `R`, and an `HList` of potential arguments `Context`. It applies the arguments to the functions for which all the arguments are present. It return an `Seq[R]` with the results.
 
 #### example
 
@@ -43,7 +52,9 @@ SelectFunctionsSeq.runAll(hi, 1, 2d)(functions) == Seq("feature1" -> 3, "feature
  ```
 
 
-5 - `FlattenFunctions[Context <: HList, FFF <: HList]`: Takes an `HList` of `HLists` of functions and an `HList` of potential arguments, and uses `SelectFunctions[Context, FF]` to calculate the resulting `HList`.
+#### `FlattenFunctions[Context <: HList, FFF <: HList]` 
+
+Takes an `HList` of `HLists` of functions and an `HList` of potential arguments, and uses `SelectFunctions[Context, FF]` to calculate the resulting `HList`.
 
 #### example
 
@@ -65,7 +76,9 @@ FlattenFunctions.runAll(1, "a")(functions) === 2 :: 1.0 :: HNil
 ```
 
 
-5 - `FlattenFunctionsSeq[Context <: HList, FFF <: HList]`: Takes an `HList` of `HLists` of functions and an `HList` of potential arguments, and uses `SelectFunctionsSeq[Context, FF]` to calculate `Seq[R]`. Meaning all functions most return the same type `R`.
+#### `FlattenFunctionsSeq[Context <: HList, FFF <: HList]`
+
+Takes an `HList` of `HLists` of functions and an `HList` of potential arguments, and uses `SelectFunctionsSeq[Context, FF]` to calculate `Seq[R]`. Meaning all functions most return the same type `R`.
 
 #### example
 
