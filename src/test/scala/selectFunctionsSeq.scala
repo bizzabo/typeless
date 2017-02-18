@@ -23,46 +23,38 @@ import shapeless._
 import typeless.hlist._
 
 class ApplyAllSeqsTests extends FunSuite with Matchers {
-  val featureGenerator1 = (x: String, i: Int) => ("feature1" -> (x.size + i))
-
-  val featureGenerator2 = (x: String, i: Int) => ("feature2" -> i)
-
-  val featureGenerator3 = (x: String, s: Char, i: Int) => ("feature3" -> (s.toInt + i + x.size))
-
-  //is possible to have generators with the same context, they will all be used
-  val featureGenerator4 = (x: String, s: Char, i: Int) => ("feature4" -> (s.toInt + i * 2 + x.size))
-
-  val generators =
-    featureGenerator1 ::
-      featureGenerator2 ::
-      featureGenerator3 ::
-      featureGenerator4 :: HNil
+  val functions =
+    { (x: String, i: Int) => ("feature1" -> (x.size + i)) } ::
+      { (x: String, i: Int) => ("feature2" -> i) } ::
+      { (x: String, s: Char, i: Int) => ("feature3" -> (s.toInt + i + x.size)) } ::
+      { (x: String, s: Char, i: Int) => ("feature4" -> (s.toInt + i * 2 + x.size)) } ::
+      HNil
 
   val hi = "hi"
   test("single argument") {
     assert(
-      SelectFunctionsSeq.runAll(hi)(generators).isEmpty
+      SelectFunctionsSeq.runAll(hi)(functions).isEmpty
     )
   }
   test("two arguments") {
     assert(
-      SelectFunctionsSeq.runAll(hi, 1)(generators) == Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctionsSeq.runAll(hi, 1)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
   test("three arguments") {
     assert(
-      SelectFunctionsSeq.runAll(hi, 1, 2d)(generators) == Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctionsSeq.runAll(hi, 1, 2d)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
   test("different three arguments") {
     assert(
-      SelectFunctionsSeq.runAll(hi, 'a', 1)(generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctionsSeq.runAll(hi, 'a', 1)(functions) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
   test("four arguments in different order") {
     // the order of the arguments doesn't matter
     assert(
-      SelectFunctionsSeq.runAll(hi, 2d, 1, 'a')(generators) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctionsSeq.runAll(hi, 2d, 1, 'a')(functions) == Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
 
