@@ -102,7 +102,7 @@ FlattenFunctionsSeq.runAll(1, "a")(functions) === Seq(2, 1)
 ## Getting started
 
 ```scala
-libraryDependencies += "ai.x" %% "typeless" % "0.1.5"
+libraryDependencies += "ai.x" %% "typeless" % "0.1.7"
 ```
 
 Currently all operations are on `HLists`, and therefore the only useful import is:
