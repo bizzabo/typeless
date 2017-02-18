@@ -26,7 +26,7 @@ SelectFunctions.runAll(hi, 'a', 1)(functions) == "hi + 1" :: 1.0 :: 101 :: 2 :: 
 
 4 - `SelectFunctionsSeq[L <: HList, FF <: HList]`: Takes an `HList` `FF` of functions, which all return the same type `R`, and an `HList` of potential arguments `Context`. It applies the arguments to the functions for which all the arguments are present. It return an `Seq[R]` with the results.
 
-#### exmaple
+#### example
 
 ```scala
 val functions =
