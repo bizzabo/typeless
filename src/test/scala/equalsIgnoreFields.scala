@@ -19,7 +19,7 @@ package typeless
 package tests
 
 import org.scalatest._
-import EqualsIgnoringFields.Ops
+import hlist.EqualsIgnoringFields.Ops
 
 sealed trait Monarch
 case class Butterflies(

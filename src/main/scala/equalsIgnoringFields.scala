@@ -15,6 +15,7 @@
  */
 package ai.x
 package typeless
+package hlist
 import shapeless._
 import labelled._
 import ops.record._
