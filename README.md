@@ -106,8 +106,7 @@ It compares two cases classes excluding specific *field names* rather than types
 #### example:
 ```scala
 
-import typeless._
-import EqualsIgnoringFields.Ops
+import typeless.hlist.EqualsIgnoringFields.Ops
 
 sealed trait Monarch
 
