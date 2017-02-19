@@ -1,6 +1,6 @@
 # typeless
 
-These are some typeclasses inspired and powered by shapeless
+Some typeclasses inspired and powered by shapeless
 
 #### `Find[L <: HList, A]`
 
