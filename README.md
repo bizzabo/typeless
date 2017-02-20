@@ -26,9 +26,9 @@ val functions =
       { (x: Char) => x.toInt } ::
       HNil
 
-SelectFunctions.runAll(1, hi)(functions) == "hi + 1" :: 2 :: HNil
-SelectFunctions.runAll(hi, 1, 2d)(functions) == 2 :: "hi + 1" :: 2 :: HNil
-SelectFunctions.runAll(hi, 'a', 1)(functions) == "hi + 1" :: 1.0 :: 101 :: 2 :: 97 :: HNil
+SelectFunctions.applyAll(1, hi)(functions) == "hi + 1" :: 2 :: HNil
+SelectFunctions.applyAll(hi, 1, 2d)(functions) == 2 :: "hi + 1" :: 2 :: HNil
+SelectFunctions.applyAll(hi, 'a', 1)(functions) == "hi + 1" :: 1.0 :: 101 :: 2 :: 97 :: HNil
 ```
 
 #### `SelectFunctionsSeq[L <: HList, FF <: HList]`
@@ -45,10 +45,10 @@ val functions =
       { (x: String, s: Char, i: Int) => ("feature4" -> (s.toInt + i * 2 + x.size)) } ::
       HNil
 
-SelectFunctionsSeq.runAll(hi)(functions).isEmpty
-SelectFunctionsSeq.runAll(hi, 1)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
+SelectFunctionsSeq.applyAll(hi)(functions).isEmpty
+SelectFunctionsSeq.applyAll(hi, 1)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
 // an extra argument makes no difference if there are no functions that use it
-SelectFunctionsSeq.runAll(hi, 1, 2d)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
+SelectFunctionsSeq.applyAll(hi, 1, 2d)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
  ```
 
 
@@ -72,7 +72,7 @@ val functions = functions1 ::
       functions2 ::
       HNil
 
-FlattenFunctions.runAll(1, "a")(functions) === 2 :: 1.0 :: HNil
+FlattenFunctions.applyAll(1, "a")(functions) === 2 :: 1.0 :: HNil
 ```
 
 
@@ -96,7 +96,7 @@ val functions = functions1 ::
       functions2 ::
       HNil
 
-FlattenFunctionsSeq.runAll(1, "a")(functions) === Seq(2, 1)
+FlattenFunctionsSeq.applyAll(1, "a")(functions) === Seq(2, 1)
 ```
 
 #### `EqualsIgnoringFields[T]`

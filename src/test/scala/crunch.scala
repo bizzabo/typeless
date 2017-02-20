@@ -37,7 +37,7 @@ class CrunchTests extends FunSuite with Matchers {
     val functions = functions1 ::
       functions2 ::
       HNil
-    val res: Seq[Int] = FlattenFunctionsSeq.runAll(1, "a")(functions)
+    val res: Seq[Int] = FlattenFunctionsSeq.applyAll(1, "a")(functions)
     assert(
       res === Seq(2, 1)
     )
@@ -56,7 +56,7 @@ class CrunchTests extends FunSuite with Matchers {
     val functions = functions1 ::
       functions2 ::
       HNil
-    val res = FlattenFunctions.runAll(1, "a")(functions)
+    val res = FlattenFunctions.applyAll(1, "a")(functions)
     assert(
       res === 2 :: 1.0 :: HNil
     )
@@ -120,12 +120,12 @@ class CrunchTests extends FunSuite with Matchers {
       HNil
 
   test("apply all") {
-    val res: Seq[String] = FlattenFunctionsSeq.runAll(1, "a")(all)
+    val res: Seq[String] = FlattenFunctionsSeq.applyAll(1, "a")(all)
     assert(res.distinct === Seq("1 + a"))
   }
 
   test("apply all Hlist") {
-    val res = FlattenFunctions.runAll(1, "a")(all)
+    val res = FlattenFunctions.applyAll(1, "a")(all)
     assert(res.runtimeList.map(_.asInstanceOf[String]).distinct === List("1 + a"))
   }
 

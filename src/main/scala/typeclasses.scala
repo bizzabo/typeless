@@ -47,18 +47,18 @@ package object hlist {
       def apply(fs: HNil, context: Context) = HNil
     }
 
-    def runAll[Context <: HList, FF <: HList, R](context: Context)(fs: FF)(
+    def applyAll[Context <: HList, FF <: HList, R](context: Context)(fs: FF)(
       implicit
       selectFunctions: SelectFunctions[FF, Context]
     ) = selectFunctions(fs, context)
 
-    def runAll[Context <: Product, HContext <: HList, FF <: HList, R](context: Context)(fs: FF)(
+    def applyAll[Context <: Product, HContext <: HList, FF <: HList, R](context: Context)(fs: FF)(
       implicit
       gen: Generic.Aux[Context, HContext],
       selectFunctions: SelectFunctions[FF, HContext]
     ) = selectFunctions(fs, gen.to(context))
 
-    def runAll[X, FF <: HList, R](x: X)(fs: FF)(
+    def applyAll[X, FF <: HList, R](x: X)(fs: FF)(
       implicit
       selectFunctions: SelectFunctions[FF, X :: HNil]
     ) = selectFunctions(fs, x :: HNil)
@@ -100,7 +100,7 @@ package object hlist {
         def apply(fs: HNil, args: Context) = HNil
       }
 
-    def runAll[Context <: Product, HContext <: HList, FFF <: HList, RR <: HList](args: Context)(fs: FFF)(
+    def applyAll[Context <: Product, HContext <: HList, FFF <: HList, RR <: HList](args: Context)(fs: FFF)(
       implicit
       gen: Generic.Aux[Context, HContext],
       flattenFunctions: FlattenFunctions.Aux[HContext, FFF, RR],
@@ -136,18 +136,18 @@ package object hlist {
       def apply(fs: HNil, context: Context): Seq[Out] = Seq.empty
     }
 
-    def runAll[Context <: HList, FF <: HList, R](context: Context)(fs: FF)(
+    def applyAll[Context <: HList, FF <: HList, R](context: Context)(fs: FF)(
       implicit
       selectFunctions: SelectFunctionsSeq.Aux[FF, Context, R]
     ): Seq[R] = selectFunctions(fs, context)
 
-    def runAll[Context <: Product, HContext <: HList, FF <: HList, R](context: Context)(fs: FF)(
+    def applyAll[Context <: Product, HContext <: HList, FF <: HList, R](context: Context)(fs: FF)(
       implicit
       gen: Generic.Aux[Context, HContext],
       selectFunctions: SelectFunctionsSeq.Aux[FF, HContext, R]
     ): Seq[R] = selectFunctions(fs, gen.to(context))
 
-    def runAll[X, FF <: HList, R](x: X)(fs: FF)(
+    def applyAll[X, FF <: HList, R](x: X)(fs: FF)(
       implicit
       selectFunctions: SelectFunctionsSeq.Aux[FF, X :: HNil, R]
     ): Seq[R] = selectFunctions(fs, x :: HNil)
@@ -180,7 +180,7 @@ package object hlist {
         def apply(fs: HNil, args: Context) = Seq.empty
       }
 
-    def runAll[Context <: Product, HContext <: HList, FFF <: HList, R](args: Context)(fs: FFF)(
+    def applyAll[Context <: Product, HContext <: HList, FFF <: HList, R](args: Context)(fs: FFF)(
       implicit
       gen: Generic.Aux[Context, HContext],
       flattenFunctions: FlattenFunctionsSeq.Aux[HContext, FFF, R]
