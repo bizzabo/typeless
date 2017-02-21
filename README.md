@@ -16,7 +16,7 @@ For Coproducts `L` and `S`, `Convert` takes a value of type `L` and converts it 
 
 #### example
 
-```
+```scala
   type A = String :+: Double :+: CNil
   type B = Double :+: String :+: List[Int] :+: CNil
 
