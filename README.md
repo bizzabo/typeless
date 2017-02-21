@@ -10,6 +10,10 @@ Will allow to find a type `A` in an `HList` `L`, if the type is not present it r
 
 Similar to `Find`, but for a group of elements, if **all** the elements of the  `S` are present in `L` it returns `Some[S]` otherwise `None`
 
+#### `Convert[L <: Coproduct, S <: Coproduct]`
+
+For Coproducts `L` and `S`, `Convert` takes a value of type `L` and converts it to type `S`.
+
 #### `SelectFunctions[L <: HList, FF <: HList]`
 
 Takes an `HList` of functions `FF` and an `HList` of potential arguments `Context`. It applies the arguments to the functions for which all the arguments are present. It returns an `HList` with the results
