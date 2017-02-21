@@ -15,7 +15,7 @@ package object hlist {
    */
   trait SelectFunctions[FF <: HList, Context <: HList] {
     type Out <: HList
-    def apply(fs: FF, context: Context): Out
+    def apply(fs: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]): Out
   }
 
   trait SelectFunctions0 {
@@ -24,7 +24,7 @@ package object hlist {
       applyContext: SelectFunctions.Aux[FF, Context, RT]
     ): SelectFunctions.Aux[F :: FF, Context, RT] = new SelectFunctions[F :: FF, Context] {
       type Out = RT
-      def apply(fs: F :: FF, context: Context) =
+      def apply(fs: F :: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]) =
         applyContext(fs.tail, context)
     }
 
@@ -38,24 +38,20 @@ package object hlist {
       applyContext: SelectFunctions.Aux[FF, Context, RT]
     ): SelectFunctions.Aux[F :: FF, Context, R :: RT] = new SelectFunctions[F :: FF, Context] {
       type Out = R :: RT
-      def apply(fs: F :: FF, context: Context) =
+      def apply(fs: F :: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]) =
         fs.head.toProduct(subset(context)) :: applyContext(fs.tail, context)
     }
 
     implicit def hnil[Context <: HList]: SelectFunctions.Aux[HNil, Context, HNil] = new SelectFunctions[HNil, Context] {
       type Out = HNil
-      def apply(fs: HNil, context: Context) = HNil
+      def apply(fs: HNil, context: Context)(implicit distinct: IsDistinctConstraint[Context]) = HNil
     }
-
-    def applyAll[Context <: HList, FF <: HList, R](context: Context)(fs: FF)(
-      implicit
-      selectFunctions: SelectFunctions[FF, Context]
-    ) = selectFunctions(fs, context)
 
     def applyAll[Context <: Product, HContext <: HList, FF <: HList, R](context: Context)(fs: FF)(
       implicit
       gen: Generic.Aux[Context, HContext],
-      selectFunctions: SelectFunctions[FF, HContext]
+      selectFunctions: SelectFunctions[FF, HContext],
+      distinct: IsDistinctConstraint[HContext]
     ) = selectFunctions(fs, gen.to(context))
 
     def applyAll[X, FF <: HList, R](x: X)(fs: FF)(
@@ -69,7 +65,7 @@ package object hlist {
  */
   trait FlattenFunctions[Context <: HList, FFF <: HList] {
     type Out <: HList
-    def apply(fs: FFF, args: Context): Out
+    def apply(fs: FFF, args: Context)(implicit distinct: IsDistinctConstraint[Context]): Out
   }
 
   trait FlattenFunctions0 {
@@ -78,7 +74,7 @@ package object hlist {
       flattenFunctions: FlattenFunctions.Aux[Context, FFF, SR]
     ): FlattenFunctions.Aux[Context, FF :: FFF, SR] = new FlattenFunctions[Context, FF :: FFF] {
       type Out = SR
-      def apply(fs: FF :: FFF, args: Context) =
+      def apply(fs: FF :: FFF, args: Context)(implicit distinct: IsDistinctConstraint[Context]) =
         flattenFunctions(fs.tail, args)
     }
   }
@@ -91,20 +87,21 @@ package object hlist {
       flattenFunctions: FlattenFunctions.Aux[Context, FFF, SR]
     ): FlattenFunctions.Aux[Context, FF :: FFF, R :: SR] = new FlattenFunctions[Context, FF :: FFF] {
       type Out = R :: SR
-      def apply(fs: FF :: FFF, args: Context) =
+      def apply(fs: FF :: FFF, args: Context)(implicit distinct: IsDistinctConstraint[Context]) =
         selectFunctions(fs.head, args) :: flattenFunctions(fs.tail, args)
     }
     implicit def hnil[Context <: HList]: FlattenFunctions.Aux[Context, HNil, HNil] =
       new FlattenFunctions[Context, HNil] {
         type Out = HNil
-        def apply(fs: HNil, args: Context) = HNil
+        def apply(fs: HNil, args: Context)(implicit distinct: IsDistinctConstraint[Context]) = HNil
       }
 
     def applyAll[Context <: Product, HContext <: HList, FFF <: HList, RR <: HList](args: Context)(fs: FFF)(
       implicit
       gen: Generic.Aux[Context, HContext],
       flattenFunctions: FlattenFunctions.Aux[HContext, FFF, RR],
-      adj: Adjoin[RR]
+      adj: Adjoin[RR],
+      distinct: IsDistinctConstraint[HContext]
     ) = flattenFunctions(fs, gen.to(args)).adjoined
   }
 
@@ -114,7 +111,7 @@ package object hlist {
    */
   trait SelectFunctionsSeq[FF <: HList, Context <: HList] {
     type Out
-    def apply(fs: FF, context: Context): Seq[Out]
+    def apply(fs: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]): Seq[Out]
   }
 
   object SelectFunctionsSeq {
@@ -126,25 +123,21 @@ package object hlist {
       selectFunctionsTail: SelectFunctionsSeq.Aux[FF, Context, R]
     ): SelectFunctionsSeq.Aux[F :: FF, Context, R] = new SelectFunctionsSeq[F :: FF, Context] {
       type Out = R
-      def apply(fs: F :: FF, context: Context): Seq[Out] = {
+      def apply(fs: F :: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]): Seq[Out] = {
         subset(context).map(args => fs.head.toProduct(args)).toSeq ++
           selectFunctionsTail(fs.tail, context)
       }
     }
     implicit def hnil[Context <: HList, R]: SelectFunctionsSeq.Aux[HNil, Context, R] = new SelectFunctionsSeq[HNil, Context] {
       type Out = R
-      def apply(fs: HNil, context: Context): Seq[Out] = Seq.empty
+      def apply(fs: HNil, context: Context)(implicit distinct: IsDistinctConstraint[Context]): Seq[Out] = Seq.empty
     }
-
-    def applyAll[Context <: HList, FF <: HList, R](context: Context)(fs: FF)(
-      implicit
-      selectFunctions: SelectFunctionsSeq.Aux[FF, Context, R]
-    ): Seq[R] = selectFunctions(fs, context)
 
     def applyAll[Context <: Product, HContext <: HList, FF <: HList, R](context: Context)(fs: FF)(
       implicit
       gen: Generic.Aux[Context, HContext],
-      selectFunctions: SelectFunctionsSeq.Aux[FF, HContext, R]
+      selectFunctions: SelectFunctionsSeq.Aux[FF, HContext, R],
+      distinct: IsDistinctConstraint[HContext]
     ): Seq[R] = selectFunctions(fs, gen.to(context))
 
     def applyAll[X, FF <: HList, R](x: X)(fs: FF)(
@@ -160,7 +153,7 @@ package object hlist {
    */
   trait FlattenFunctionsSeq[Context <: HList, FFF <: HList] {
     type Out
-    def apply(fs: FFF, args: Context): Seq[Out]
+    def apply(fs: FFF, args: Context)(implicit distinct: IsDistinctConstraint[Context]): Seq[Out]
   }
 
   object FlattenFunctionsSeq {
@@ -171,19 +164,20 @@ package object hlist {
       flattenFunctions: FlattenFunctionsSeq.Aux[Context, FFF, R]
     ) = new FlattenFunctionsSeq[Context, FF :: FFF] {
       type Out = R
-      def apply(fs: FF :: FFF, args: Context) =
+      def apply(fs: FF :: FFF, args: Context)(implicit distinct: IsDistinctConstraint[Context]) =
         selectFunctions(fs.head, args) ++ flattenFunctions(fs.tail, args)
     }
     implicit def hnil[Context <: HList, R] =
       new FlattenFunctionsSeq[Context, HNil] {
         type Out = R
-        def apply(fs: HNil, args: Context) = Seq.empty
+        def apply(fs: HNil, args: Context)(implicit distinct: IsDistinctConstraint[Context]) = Seq.empty
       }
 
     def applyAll[Context <: Product, HContext <: HList, FFF <: HList, R](args: Context)(fs: FFF)(
       implicit
       gen: Generic.Aux[Context, HContext],
-      flattenFunctions: FlattenFunctionsSeq.Aux[HContext, FFF, R]
+      flattenFunctions: FlattenFunctionsSeq.Aux[HContext, FFF, R],
+      distinct: IsDistinctConstraint[HContext]
     ): Seq[R] = flattenFunctions(fs, gen.to(args))
   }
 
