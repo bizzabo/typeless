@@ -22,7 +22,7 @@ import ai.x.typeless.coproduct.Convert
 import org.scalatest._
 import shapeless._
 
-class IntersectTests extends FunSuite with Matchers {
+class ConvertTests extends FunSuite with Matchers {
 
   type A = String :+: Double :+: CNil
   type B = Double :+: String :+: List[Int] :+: CNil

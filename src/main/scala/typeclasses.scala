@@ -275,9 +275,9 @@ package object coproduct {
 
   object Convert extends Convert0 {
     def apply[L <: Coproduct, S <: Coproduct](implicit f: Convert[L, S]) = f
-    def intersect[L <: Coproduct, S <: Coproduct](implicit f: Convert[L, S]) = f
+    def convert[L <: Coproduct, S <: Coproduct](implicit f: Convert[L, S]) = f
     implicit class Ops[L <: Coproduct](l: L) {
-      def intersect[S <: Coproduct](implicit f: Convert[L, S]): Option[S] = f.convert(l)
+      def convert[S <: Coproduct](implicit f: Convert[L, S]): Option[S] = f.convert(l)
     }
     implicit def cCons[H, T <: Coproduct, S <: Coproduct](
       implicit
