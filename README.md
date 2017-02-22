@@ -20,7 +20,7 @@ For Coproducts `L` and `S`, `Convert` takes a value of type `L` and converts it 
   type A = String :+: Double :+: CNil
   type B = Double :+: String :+: List[Int] :+: CNil
 
-  val coproductB:Coproduct[B] = Coproduct[A]("test").convert[B]
+  Coproduct[A]("test").convert[B] === Some(Coproduct[B]("test"))
 
 ```
 
