@@ -74,6 +74,17 @@ class AncesstorsTests extends FunSuite with Matchers {
 
     val res: Seq[Int] = functions.features[OutputTimeEntities](OutputSomethingElse(1), OutputEmail("a"))
     //val res: Seq[Int] = functions.features[OutputTimeEntities](OutputSomethingElse(1)) <-- won't compile
+    def parseContext[Stage](js: JsValue)(
+      implicit
+      ancesstors: Ancesstors.Aux[Stage, ExpectedContext]
+    ): JsResult[ExpectedContext] = js.validate[ExpectedContext]
+
+    val contextJs: Future[JsValue] = Graph.fetchContext[OutputTimeEntities]
+    val context = contextJs.map(parseContext[OutputTimeEntities])
+    context.map {
+      c =>
+        functions.features[OutputTimeEntities](c)
+    }
 
     assert(
       res === Seq(2, 1)
