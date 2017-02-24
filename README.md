@@ -167,6 +167,10 @@ For a `Seq` of Coproducts `C`, convert to `HList` of type `L`
     type L = String :: Int :: HNil
 
     Seq(Coproduct[A](1), Coproduct[A]("a")).toHList[L] === Some("a" :: 1 :: HNil))
+    
+    case class Foo(i:Int, s:String)
+    
+    Seq(Coproduct[A](1), Coproduct[A]("a")).toHList[Foo] === Some(Food("a", 1))
 
 ```
 
