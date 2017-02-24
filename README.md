@@ -10,6 +10,38 @@ Will allow to find a type `A` in an `HList` `L`, if the type is not present it r
 
 Similar to `Find`, but for a group of elements, if **all** the elements of the  `S` are present in `L` it returns `Some[S]` otherwise `None`
 
+#### `Convert[L <: Coproduct, S <: Coproduct]`
+
+For Coproducts `L` and `S`, `Convert` takes a value of type `L` and converts it to type `S`.
+
+#### example
+
+```scala
+  type A = String :+: Double :+: CNil
+  type B = Double :+: String :+: List[Int] :+: CNil
+
+  Coproduct[A]("test").convert[B] === Some(Coproduct[B]("test"))
+
+```
+
+#### `CoproductToHList[C <: Coproduct, L <: HList]`
+
+For a `Seq` of Coproducts `C`, convert to `HList` of type `L`
+
+#### example 
+
+```scala
+    type A = Int :+: String :+: CNil
+    type L = String :: Int :: HNil
+
+    Seq(Coproduct[A](1), Coproduct[A]("a")).toHList[L] === Some("a" :: 1 :: HNil))
+    
+    case class Foo(i:Int, s:String)
+    
+    Seq(Coproduct[A](1), Coproduct[A]("a")).toHList[Foo] === Some(Food("a", 1))
+
+```
+
 #### `SelectFunctions[L <: HList, FF <: HList]`
 
 Takes an `HList` of functions `FF` and an `HList` of potential arguments `Context`. It applies the arguments to the functions for which all the arguments are present. It returns an `HList` with the results
@@ -139,38 +171,6 @@ assert(butterfliesStation1.equalsIgnoringFields(field => field == '_id || field 
 assert(!butterfliesStation1.equalsIgnoringFields(_ == '_id)(butterfliesStation2))
 // the two objects are different, period
 assert(butterfliesStation1 != butterfliesStation2) 
-
-```
-
-#### `Convert[L <: Coproduct, S <: Coproduct]`
-
-For Coproducts `L` and `S`, `Convert` takes a value of type `L` and converts it to type `S`.
-
-#### example
-
-```scala
-  type A = String :+: Double :+: CNil
-  type B = Double :+: String :+: List[Int] :+: CNil
-
-  Coproduct[A]("test").convert[B] === Some(Coproduct[B]("test"))
-
-```
-
-#### `CoproductToHList[C <: Coproduct, L <: HList]`
-
-For a `Seq` of Coproducts `C`, convert to `HList` of type `L`
-
-### example 
-
-```scala
-    type A = Int :+: String :+: CNil
-    type L = String :: Int :: HNil
-
-    Seq(Coproduct[A](1), Coproduct[A]("a")).toHList[L] === Some("a" :: 1 :: HNil))
-    
-    case class Foo(i:Int, s:String)
-    
-    Seq(Coproduct[A](1), Coproduct[A]("a")).toHList[Foo] === Some(Food("a", 1))
 
 ```
 
