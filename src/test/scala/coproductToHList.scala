@@ -36,10 +36,8 @@ class coproductToHList extends FunSuite with Matchers {
   }
 
   test("order doesn't matter when converting list of coproducts to hlist") {
-
     type A = Int :+: String :+: CNil
     type L = String :: Int :: HNil
-
     val a: Seq[A] = Seq(Coproduct[A](1), Coproduct[A]("a"))
 
     assert(a.toHList[L] === Some("a" :: 1 :: HNil))
@@ -52,6 +50,24 @@ class coproductToHList extends FunSuite with Matchers {
     val a: Seq[A] = Seq(Coproduct[A](1), Coproduct[A]("a"))
 
     assert(a.toHList[Double :: HNil] === None)
+  }
+
+  test("can convert list of coproducts to case class") {
+    type A = String :+: Int :+: CNil
+    case class Foo(i: Int, s: String)
+
+    val a: Seq[A] = Seq(Coproduct[A](1), Coproduct[A]("a"))
+
+    assert(a.toProduct[Foo] === Some(Foo(1, "a")))
+  }
+
+  test("cannot convert list of coproducts to case class if types don't match") {
+    type A = String :+: Int :+: CNil
+    case class FooD(i: Int, s: String, d: Double)
+
+    val a: Seq[A] = Seq(Coproduct[A](1), Coproduct[A]("a"))
+
+    assert(a.toProduct[FooD] === None)
   }
 
 }

@@ -19,7 +19,7 @@ package typeless
 package coproduct
 
 import shapeless.ops.coproduct.Selector
-import shapeless.{ ::, Coproduct, HList, HNil }
+import shapeless.{ ::, Coproduct, Generic, HList, HNil }
 
 trait CoproductToHList[C <: Coproduct, L <: HList] {
   def apply(c: Seq[C]): Option[L]
@@ -32,7 +32,13 @@ trait CoproductToHList0 {
 }
 object CoproductToHList extends CoproductToHList0 {
   def apply[C <: Coproduct, L <: HList](implicit c: CoproductToHList[C, L]) = c
-  implicit class Ops[C <: Coproduct](c: Seq[C]) {
+  implicit class Ops[C <: Coproduct, L <: HList](c: Seq[C]) {
+    def toProduct[P <: Product](
+      implicit
+      gen: Generic.Aux[P, L],
+      coproductToHList: CoproductToHList[C, L]
+    ): Option[P] = coproductToHList(c).map(gen.from)
+
     def toHList[L <: HList](implicit coproductToHList: CoproductToHList[C, L]) = coproductToHList(c)
   }
   implicit def hcons[H, T <: HList, C <: Coproduct](
