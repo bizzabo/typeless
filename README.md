@@ -146,10 +146,6 @@ assert(butterfliesStation1 != butterfliesStation2)
 
 For Coproducts `L` and `S`, `Convert` takes a value of type `L` and converts it to type `S`.
 
-#### `CoproductToHList[C <: Coproduct, L <: HList]`
-
-For a `Seq` of Coproducts `C`, convert to `HList` of type `L`
-
 #### example
 
 ```scala
@@ -157,6 +153,20 @@ For a `Seq` of Coproducts `C`, convert to `HList` of type `L`
   type B = Double :+: String :+: List[Int] :+: CNil
 
   Coproduct[A]("test").convert[B] === Some(Coproduct[B]("test"))
+
+```
+
+#### `CoproductToHList[C <: Coproduct, L <: HList]`
+
+For a `Seq` of Coproducts `C`, convert to `HList` of type `L`
+
+### example 
+
+```scala
+    type A = Int :+: String :+: CNil
+    type L = String :: Int :: HNil
+
+    Seq(Coproduct[A](1), Coproduct[A]("a")).toHList[L] === Some("a" :: 1 :: HNil))
 
 ```
 
