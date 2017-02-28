@@ -156,6 +156,12 @@ object SelectFunctionsSeq {
     distinct: IsDistinctConstraint[HContext]
   ): Seq[R] = selectFunctions(fs, gen.to(context))
 
+  def applyAll[Context <: HList, FF <: HList, R](context: Context)(fs: FF)(
+    implicit
+    selectFunctions: SelectFunctionsSeq.Aux[FF, Context, R],
+    distinct: IsDistinctConstraint[Context]
+  ): Seq[R] = selectFunctions(fs, context)
+
   def applyAll[X, FF <: HList, R](x: X)(fs: FF)(
     implicit
     selectFunctions: SelectFunctionsSeq.Aux[FF, X :: HNil, R]

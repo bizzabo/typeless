@@ -57,5 +57,10 @@ class ApplyAllSeqsTests extends FunSuite with Matchers {
       SelectFunctionsSeq.applyAll(hi, 2d, 1, 'a')(functions) === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
+  test("can call with hlist") {
+    assert(
+      SelectFunctionsSeq.applyAll(hi :: 1 :: HNil)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
+    )
+  }
 
 }
