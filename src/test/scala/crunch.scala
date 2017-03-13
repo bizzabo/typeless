@@ -24,25 +24,6 @@ import typeless.hlist._
 
 class CrunchTests extends FunSuite with Matchers {
 
-  test("FlattenFunctionsSeq") {
-    val functions1 =
-      { (x: String, i: Int) => (x.size + i) } ::
-        { (x: String, s: Char, i: Int) => (s.toInt + i * 2 + x.size) } ::
-        HNil
-    val functions2 =
-      { (x: String, s: Char, i: Int) => (s.toInt + i + x.size) } ::
-        { (i: Int) => i } ::
-        HNil
-
-    val functions = functions1 ::
-      functions2 ::
-      HNil
-    val res: Seq[Int] = FlattenFunctionsSeq.applyAll(1, "a")(functions)
-    assert(
-      res === Seq(2, 1)
-    )
-  }
-
   test("FlattenFunctions") {
     val functions1 =
       { (x: String, i: Int) => (x.size + i) } ::
@@ -118,11 +99,6 @@ class CrunchTests extends FunSuite with Matchers {
       ls ::
       ls ::
       HNil
-
-  test("apply all") {
-    val res: Seq[String] = FlattenFunctionsSeq.applyAll(1, "a")(all)
-    assert(res.distinct === Seq("1 + a"))
-  }
 
   test("apply all Hlist") {
     val res = FlattenFunctions.applyAll(1, "a")(all)
