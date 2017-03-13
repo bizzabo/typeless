@@ -31,35 +31,31 @@ class ApplyAllSeqsTests extends FunSuite with Matchers {
       HNil
 
   val hi = "hi"
-  test("single argument") {
-    assert(
-      SelectFunctionsSeq.applyAll(hi)(functions).isEmpty
-    )
-  }
+
   test("two arguments") {
     assert(
-      SelectFunctionsSeq.applyAll(hi, 1)(functions) === Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctions.applyAll(hi, 1)(functions).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
   test("three arguments") {
     assert(
-      SelectFunctionsSeq.applyAll(hi, 1, 2d)(functions) === Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctions.applyAll(hi, 1, 2d)(functions).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
   test("different three arguments") {
     assert(
-      SelectFunctionsSeq.applyAll(hi, 'a', 1)(functions) === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctions.applyAll(hi, 'a', 1)(functions).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
   test("four arguments in different order") {
     // the order of the arguments doesn't matter
     assert(
-      SelectFunctionsSeq.applyAll(hi, 2d, 1, 'a')(functions) === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctions.applyAll(hi, 2d, 1, 'a')(functions).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
   test("can call with hlist") {
     assert(
-      SelectFunctionsSeq.applyAll(hi :: 1 :: HNil)(functions) == Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctions.applyAll(hi :: 1 :: HNil)(functions).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1)
     )
   }
 

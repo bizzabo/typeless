@@ -63,12 +63,18 @@ object SelectFunctions extends SelectFunctions0 {
     def apply(fs: HNil, context: Context)(implicit distinct: IsDistinctConstraint[Context]) = HNil
   }
 
-  def applyAll[Context <: Product, HContext <: HList, FF <: HList, R](context: Context)(fs: FF)(
+  def applyAll[Context <: Product, HContext <: HList, FF <: HList](context: Context)(fs: FF)(
     implicit
     gen: Generic.Aux[Context, HContext],
     selectFunctions: SelectFunctions[FF, HContext],
     distinct: IsDistinctConstraint[HContext]
   ) = selectFunctions(fs, gen.to(context))
+
+  def applyAll[HContext <: HList, FF <: HList](context: HContext)(fs: FF)(
+    implicit
+    selectFunctions: SelectFunctions[FF, HContext],
+    distinct: IsDistinctConstraint[HContext]
+  ) = selectFunctions(fs, context)
 
   def applyAll[X, FF <: HList, R](x: X)(fs: FF)(
     implicit
@@ -119,86 +125,6 @@ object FlattenFunctions extends FlattenFunctions0 {
     adj: Adjoin[RR],
     distinct: IsDistinctConstraint[HContext]
   ) = flattenFunctions(fs, gen.to(args)).adjoined
-}
-
-/* takes an HList of functions, which all return the same type, and an HList of potential arguments
-   * it applies the arguments to the functions for which all the arguments are present
-   * it return an Seq with the results
-   */
-trait SelectFunctionsSeq[FF <: HList, Context <: HList] {
-  type Out
-  def apply(fs: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]): Seq[Out]
-}
-
-object SelectFunctionsSeq {
-  type Aux[FF <: HList, Context <: HList, R] = SelectFunctionsSeq[FF, Context] { type Out = R }
-  implicit def hcons[Context <: HList, FF <: HList, F, Args <: HList, R](
-    implicit
-    fp: FnToProduct.Aux[F, Args => R],
-    subset: Subset[Context, Args],
-    selectFunctionsTail: SelectFunctionsSeq.Aux[FF, Context, R]
-  ): SelectFunctionsSeq.Aux[F :: FF, Context, R] = new SelectFunctionsSeq[F :: FF, Context] {
-    type Out = R
-    def apply(fs: F :: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]): Seq[Out] = {
-      subset(context).map(args => fs.head.toProduct(args)).toSeq ++
-        selectFunctionsTail(fs.tail, context)
-    }
-  }
-  implicit def hnil[Context <: HList, R]: SelectFunctionsSeq.Aux[HNil, Context, R] = new SelectFunctionsSeq[HNil, Context] {
-    type Out = R
-    def apply(fs: HNil, context: Context)(implicit distinct: IsDistinctConstraint[Context]): Seq[Out] = Seq.empty
-  }
-
-  def applyAll[Context <: Product, HContext <: HList, FF <: HList, R](context: Context)(fs: FF)(
-    implicit
-    gen: Generic.Aux[Context, HContext],
-    selectFunctions: SelectFunctionsSeq.Aux[FF, HContext, R],
-    distinct: IsDistinctConstraint[HContext]
-  ): Seq[R] = selectFunctions(fs, gen.to(context))
-
-  def applyAll[Context <: HList, FF <: HList, R](context: Context)(fs: FF)(
-    implicit
-    selectFunctions: SelectFunctionsSeq.Aux[FF, Context, R],
-    distinct: IsDistinctConstraint[Context]
-  ): Seq[R] = selectFunctions(fs, context)
-
-  def applyAll[X, FF <: HList, R](x: X)(fs: FF)(
-    implicit
-    selectFunctions: SelectFunctionsSeq.Aux[FF, X :: HNil, R]
-  ): Seq[R] = selectFunctions(fs, x :: HNil)
 
 }
 
-/* takes an HList of HLists FFF of functions and an HList of potential arguments Context, 
-   * it uses SelectFunctionsSeq[Context, FF] (FF is an HList of functions) to calculate Seq[R]. 
-   * Meaning all functions most return the same type R. 
-   */
-trait FlattenFunctionsSeq[Context <: HList, FFF <: HList] {
-  type Out
-  def apply(fs: FFF, args: Context)(implicit distinct: IsDistinctConstraint[Context]): Seq[Out]
-}
-
-object FlattenFunctionsSeq {
-  type Aux[Context <: HList, FFF <: HList, R] = FlattenFunctionsSeq[Context, FFF] { type Out = R }
-  implicit def hcons[Context <: HList, FF <: HList, FFF <: HList, R](
-    implicit
-    selectFunctions: SelectFunctionsSeq.Aux[FF, Context, R],
-    flattenFunctions: FlattenFunctionsSeq.Aux[Context, FFF, R]
-  ) = new FlattenFunctionsSeq[Context, FF :: FFF] {
-    type Out = R
-    def apply(fs: FF :: FFF, args: Context)(implicit distinct: IsDistinctConstraint[Context]) =
-      selectFunctions(fs.head, args) ++ flattenFunctions(fs.tail, args)
-  }
-  implicit def hnil[Context <: HList, R] =
-    new FlattenFunctionsSeq[Context, HNil] {
-      type Out = R
-      def apply(fs: HNil, args: Context)(implicit distinct: IsDistinctConstraint[Context]) = Seq.empty
-    }
-
-  def applyAll[Context <: Product, HContext <: HList, FFF <: HList, R](args: Context)(fs: FFF)(
-    implicit
-    gen: Generic.Aux[Context, HContext],
-    flattenFunctions: FlattenFunctionsSeq.Aux[HContext, FFF, R],
-    distinct: IsDistinctConstraint[HContext]
-  ): Seq[R] = flattenFunctions(fs, gen.to(args))
-}
