@@ -44,7 +44,7 @@ For a `Seq` of Coproducts `C`, convert to `HList` of type `L`
 
 #### `SelectFunctions[L <: HList, FF <: HList]`
 
-Takes an `HList` of functions `FF` and an `HList` of potential arguments `Context`. It applies the arguments to the functions for which all the arguments are present. It returns an `HList` with the results
+Takes an `HList` of functions `FF` and an `HList` of potential arguments `Context`. It applies the arguments to the functions for which all the arguments are present. It returns an `HList` with the results. It will *not compile* if there is a function that cannot be applied.
 
 #### example
 
@@ -58,8 +58,7 @@ val functions =
       { (x: Char) => x.toInt } ::
       HNil
 
-SelectFunctions.applyAll(1, hi)(functions) == "hi + 1" :: 2 :: HNil
-SelectFunctions.applyAll(hi, 1, 2d)(functions) == 2 :: "hi + 1" :: 2 :: HNil
+SelectFunctions.applyAll(1, hi)(functions) // won't compile
 SelectFunctions.applyAll(hi, 'a', 1)(functions) == "hi + 1" :: 1.0 :: 101 :: 2 :: 97 :: HNil
 ```
 
@@ -83,7 +82,7 @@ val functions = functions1 ::
       functions2 ::
       HNil
 
-FlattenFunctions.applyAll(1, "a")(functions) === 2 :: 1.0 :: HNil
+FlattenFunctions.applyAll(1, "a", 'a')(functions) === 2 :: 1.0 :: 99 :: HNil
 ```
 
 #### `EqualsIgnoringFields[T]`
