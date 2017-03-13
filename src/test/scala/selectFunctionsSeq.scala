@@ -24,17 +24,21 @@ import typeless.hlist._
 import shapeless.test.illTyped
 
 class ApplyAllSeqsTests extends FunSuite with Matchers {
+  val function1 = { (x: String, i: Int) => ("feature1" -> (x.size + i)) }
+  val function2 = { (x: String, i: Int) => ("feature2" -> i) }
+  val function3 = { (x: String, s: Char, i: Int) => ("feature3" -> (s.toInt + i + x.size)) }
+  val function4 = { (x: String, s: Char, i: Int) => ("feature4" -> (s.toInt + i * 2 + x.size)) }
+
   object functions1 {
     val functions =
-      { (x: String, i: Int) => ("feature1" -> (x.size + i)) } ::
-        { (x: String, i: Int) => ("feature2" -> i) } ::
-        HNil
+      function1 :: function2 :: HNil
   }
   object functions2 {
-    val functions =
-      { (x: String, s: Char, i: Int) => ("feature3" -> (s.toInt + i + x.size)) } ::
-        { (x: String, s: Char, i: Int) => ("feature4" -> (s.toInt + i * 2 + x.size)) } ::
-        HNil
+    val functions = function1 :: function2 :: function3 :: HNil
+  }
+
+  object functions3 {
+    val functions = function1 :: function2 :: function3 :: function4 :: HNil
   }
 
   val hi = "hi"
@@ -46,18 +50,18 @@ class ApplyAllSeqsTests extends FunSuite with Matchers {
   }
   test("won't compile if a function is not satisfied") {
     illTyped("""
-      SelectFunctions.applyAll(hi, 1, 2d)(functions1.functions :+ functions2.functions.head).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1)
+      SelectFunctions.applyAll(hi, 1, 2d)(functions2.functions).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1)
     """)
   }
   test("different three arguments") {
     assert(
-      SelectFunctions.applyAll(hi, 'a', 1)(functions1.functions ++ functions2.functions).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctions.applyAll(hi, 'a', 1)(functions3.functions).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
   test("four arguments in different order") {
     // the order of the arguments doesn't matter
     assert(
-      SelectFunctions.applyAll(hi, 2d, 1, 'a')(functions1.functions ++ functions2.functions).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
+      SelectFunctions.applyAll(hi, 2d, 1, 'a')(functions3.functions).to[Seq] === Seq("feature1" -> 3, "feature2" -> 1, "feature3" -> 100, "feature4" -> 101)
     )
   }
   test("can call with hlist") {
