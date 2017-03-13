@@ -29,23 +29,13 @@ import shapeless.ops.coproduct.Inject
    * it applies the arguments to the functions for which all the arguments are present
    * it return an HList with the results
    */
+@annotation.implicitNotFound(msg = "Some functions are not satisfied \n Functions: ${FF} \n Arguments: ${Context}")
 trait SelectFunctions[FF <: HList, Context <: HList] {
   type Out <: HList
   def apply(fs: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]): Out
 }
 
-trait SelectFunctions0 {
-  implicit def hconsNotFound[F, FF <: HList, Context <: HList, Args <: HList, RT <: HList](
-    implicit
-    applyContext: SelectFunctions.Aux[FF, Context, RT]
-  ): SelectFunctions.Aux[F :: FF, Context, RT] = new SelectFunctions[F :: FF, Context] {
-    type Out = RT
-    def apply(fs: F :: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]) =
-      applyContext(fs.tail, context)
-  }
-
-}
-object SelectFunctions extends SelectFunctions0 {
+object SelectFunctions {
   type Aux[FF <: HList, Context <: HList, R <: HList] = SelectFunctions[FF, Context] { type Out = R }
   implicit def hcons[F, FF <: HList, Context <: HList, Args <: HList, R, RT <: HList](
     implicit

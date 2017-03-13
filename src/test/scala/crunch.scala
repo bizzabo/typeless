@@ -37,9 +37,9 @@ class CrunchTests extends FunSuite with Matchers {
     val functions = functions1 ::
       functions2 ::
       HNil
-    val res = FlattenFunctions.applyAll(1, "a")(functions)
+    val res = FlattenFunctions.applyAll(1, "a", 'b')(functions)
     assert(
-      res === 2 :: 1.0 :: HNil
+      res === 2 :: 101 :: 100 :: 1.0 :: HNil
     )
   }
 
