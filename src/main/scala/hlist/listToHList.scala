@@ -21,32 +21,32 @@ package hlist
 import shapeless._
 import syntax.typeable._
 
-trait ListToProduct[L, H <: HList] {
-  def toProduct(l: Seq[L]): Option[H]
+trait ListToHList[L, H <: HList] {
+  def toHList(l: Seq[L]): Option[H]
 }
 
-object ListToProduct {
+object ListToHList {
   implicit class Ops[L, H <: HList](l: List[L]) {
     def toProduct[P <: Product](
       implicit
       generic: Generic.Aux[P, H],
-      listToProduct: ListToProduct[L, H]
-    ): Option[P] = listToProduct.toProduct(l).map(p => generic.from(p))
+      listToHList: ListToHList[L, H]
+    ): Option[P] = listToHList.toHList(l).map(p => generic.from(p))
   }
 
   implicit def hcons[L, H, T <: HList](
     implicit
-    listToProduct: ListToProduct[L, T],
+    listToHList: ListToHList[L, T],
     typeable: Typeable[H]
-  ): ListToProduct[L, H :: T] = new ListToProduct[L, H :: T] {
-    def toProduct(l: Seq[L]): Option[H :: T] = {
+  ): ListToHList[L, H :: T] = new ListToHList[L, H :: T] {
+    def toHList(l: Seq[L]): Option[H :: T] = {
       for {
         h <- l.flatMap(_.cast[H]).headOption
-        tail <- listToProduct.toProduct(l)
+        tail <- listToHList.toHList(l)
       } yield h :: tail
     }
   }
-  implicit def hnil[L] = new ListToProduct[L, HNil] {
-    def toProduct(c: Seq[L]): Option[HNil] = Some(HNil)
+  implicit def hnil[L] = new ListToHList[L, HNil] {
+    def toHList(c: Seq[L]): Option[HNil] = Some(HNil)
   }
 }

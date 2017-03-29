@@ -18,13 +18,12 @@ package ai.x
 package typeless
 package test
 
-import ai.x.typeless.hlist.ListToProduct
+import ai.x.typeless.hlist.ListToHList
 import org.scalatest.{ FunSuite, Matchers }
-import shapeless._
 
-class listToProduct extends FunSuite with Matchers {
+class listToHList extends FunSuite with Matchers {
 
-  import ListToProduct.Ops
+  import ListToHList.Ops
 
   sealed trait A
   case class B() extends A
