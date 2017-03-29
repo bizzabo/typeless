@@ -10,6 +10,24 @@ Will allow to find a type `A` in an `HList` `L`, if the type is not present it r
 
 Similar to `Find`, but for a group of elements, if **all** the elements of the  `S` are present in `L` it returns `Some[S]` otherwise `None`
 
+#### `ListToHList[L, H < HList]`
+
+Convert a `List[L]` to an `Option[HList]`. Going to the `HList`, lets you go from a `List[L]` to a `Product`.
+```scala
+
+  import ListToHList.Ops
+
+  sealed trait A
+  case class B() extends A
+  case class C() extends A
+
+  case class D(b: B, c: C)
+  
+  val listA: List[A] = List(B(), C())
+  
+  listA.toProduct[D] === Some(D(B(), C()))
+```
+
 #### `Convert[L <: Coproduct, S <: Coproduct]`
 
 For Coproducts `L` and `S`, `Convert` takes a value of type `L` and converts it to type `S`.
