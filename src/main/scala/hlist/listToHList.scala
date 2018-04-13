@@ -32,6 +32,14 @@ object ListToHList {
       generic: Generic.Aux[P, H],
       listToHList: ListToHList[L, H]
     ): Option[P] = listToHList.toHList(l).map(p => generic.from(p))
+
+    def findByType[A](
+      implicit
+      listToHList: ListToHList[L, H],
+      find: Find[H, A]
+    ): Option[A] = {
+      listToHList.toHList(l).flatMap(find.find(_))
+    }
   }
 
   implicit def hcons[L, H, T <: HList](

@@ -43,4 +43,7 @@ class listToHList extends FunSuite with Matchers {
     assert(listA.toProduct[F] === None)
   }
 
+  test("will find instance of type if it exists in list") {
+    assert(listA.findByType[B] === Some(B()))
+  }
 }
