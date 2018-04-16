@@ -20,7 +20,6 @@ package test
 
 import ai.x.typeless.hlist.ListToHList
 import org.scalatest.{ FunSuite, Matchers }
-import shapeless.HNil
 
 class listToHList extends FunSuite with Matchers {
 
