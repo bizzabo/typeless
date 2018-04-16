@@ -25,7 +25,22 @@ trait ListToHList[L, H <: HList] {
   def toHList(l: Seq[L]): Option[H]
 }
 
-trait ListToHListPriority {
+object ListToHList {
+  implicit class Ops[L, H <: HList, G <: HList](l: Seq[L]) {
+    def toProduct[P <: Product](
+      implicit
+      generic: Generic.Aux[P, H],
+      listToHList: ListToHList[L, H]
+    ): Option[P] = listToHList.toHList(l).map(p => generic.from(p))
+
+    def findByType[A](
+      implicit
+      listToHList: ListToHList[L, A :: HNil]
+    ): Option[A] = {
+      listToHList.toHList(l).map(_.head)
+    }
+  }
+
   implicit def hcons[L, H, T <: HList](
     implicit
     listToHList: ListToHList[L, T],
@@ -36,31 +51,6 @@ trait ListToHListPriority {
         h <- l.flatMap(_.cast[H]).headOption
         tail <- listToHList.toHList(l)
       } yield h :: tail
-    }
-  }
-}
-
-object ListToHList extends ListToHListPriority {
-  implicit class Ops[L, H <: HList](l: Seq[L]) {
-    def toProduct[P <: Product](
-      implicit
-      generic: Generic.Aux[P, H],
-      listToHList: ListToHList[L, H]
-    ): Option[P] = listToHList.toHList(l).map(p => generic.from(p))
-
-    def toHlist(
-      implicit
-      listToHList: ListToHList[L, H]
-    ) = {
-      listToHList.toHList(l)
-    }
-
-    def findByType[A](
-      implicit
-      listToHList: ListToHList[L, H],
-      find: Find[H, A]
-    ): Option[A] = {
-      listToHList.toHList(l).flatMap(find.find(_))
     }
   }
 
