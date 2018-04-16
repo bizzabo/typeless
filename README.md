@@ -12,7 +12,11 @@ Similar to `Find`, but for a group of elements, if **all** the elements of the  
 
 #### `ListToHList[L, H < HList]`
 
-Converts a `List[L]` to an `Option[HList]`. The `ListToHList` implicit class exposes two features. `.toProduct[A]` lets you go from a `List[L]` to an `Option[A]`. Second, `.findByType[B]`, enables you to find type `B` within `List[L]`
+Converts a `List[L]` to an `Option[HList]`. The `ListToHList` implicit class exposes two features. 
+
+`.toProduct[A]`: convert `List[L]` to an `Option[A]`.
+
+`.findByType[B]`: find type `B` within `List[L]`
 
 ```scala
 
