@@ -53,7 +53,6 @@ object ListToHList {
       } yield h :: tail
     }
   }
-
   implicit def hnil[L] = new ListToHList[L, HNil] {
     def toHList(c: Seq[L]): Option[HNil] = Some(HNil)
   }
