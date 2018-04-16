@@ -26,7 +26,7 @@ trait ListToHList[L, H <: HList] {
 }
 
 object ListToHList {
-  implicit class Ops[L, H <: HList, G <: HList](l: Seq[L]) {
+  implicit class Ops[L, H <: HList](l: Seq[L]) {
     def toProduct[P <: Product](
       implicit
       generic: Generic.Aux[P, H],
