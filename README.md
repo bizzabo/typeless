@@ -149,7 +149,7 @@ assert(butterfliesStation1 != butterfliesStation2)
 ## Getting started
 
 ```scala
-libraryDependencies += "ai.x" %% "typeless" % "0.4.1"
+libraryDependencies += "ai.x" %% "typeless" % "0.4.2"
 ```
 
 Currently all operations are on `HLists`, and therefore the only useful import is:
