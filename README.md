@@ -12,7 +12,8 @@ Similar to `Find`, but for a group of elements, if **all** the elements of the  
 
 #### `ListToHList[L, H < HList]`
 
-Convert a `List[L]` to an `Option[HList]`. Going to the `HList`, lets you go from a `List[L]` to a `Product`.
+Converts a `List[L]` to an `Option[HList]`. The `ListToHList` implicit class exposes two features. `.toProduct[A]` lets you go from a `List[L]` to an `Option[A]`. Second, `.findByType[B]`, enables you to find type `B` within `List[L]`
+
 ```scala
 
   import ListToHList.Ops
@@ -26,6 +27,8 @@ Convert a `List[L]` to an `Option[HList]`. Going to the `HList`, lets you go fro
   val listA: List[A] = List(B(), C())
   
   listA.toProduct[D] === Some(D(B(), C()))
+  
+  listA.findByType[B] === Some(B())
 ```
 
 #### `Convert[L <: Coproduct, S <: Coproduct]`
