@@ -20,6 +20,7 @@ package test
 
 import ai.x.typeless.hlist.ListToHList
 import org.scalatest.{ FunSuite, Matchers }
+import shapeless.HNil
 
 class listToHList extends FunSuite with Matchers {
 
@@ -45,5 +46,8 @@ class listToHList extends FunSuite with Matchers {
 
   test("will find instance of type if it exists in list") {
     assert(listA.findByType[B] === Some(B()))
+  }
+  test("will convert to hlist") {
+    assert(listA.toHlist === Some(B() :: C() :: HNil))
   }
 }
