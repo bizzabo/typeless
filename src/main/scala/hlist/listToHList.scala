@@ -35,9 +35,9 @@ object ListToHList {
 
     def findByType[A](
       implicit
-      listToHList: ListToHList[L, A :: HNil]
+      typeable: Typeable[A]
     ): Option[A] = {
-      listToHList.toHList(l).map(_.head)
+      l.flatMap(_.cast[A]).headOption
     }
   }
 

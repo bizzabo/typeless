@@ -20,6 +20,7 @@ package test
 
 import ai.x.typeless.hlist.ListToHList
 import org.scalatest.{ FunSuite, Matchers }
+import shapeless.Typeable
 
 class listToHList extends FunSuite with Matchers {
 
@@ -48,7 +49,11 @@ class listToHList extends FunSuite with Matchers {
   }
 
   test("will find instance of type if it is at the end of the list") {
-    assert(listA.findByType[C] === Some(C()))
+    def findByT[A, B <: A](l: Seq[A])(implicit ev: Typeable[B]): Option[B] = {
+      l.findByType[B]
+    }
+
+    assert(findByT[A, C](listA) === Some(C()))
   }
 
   test("won't find instance if it doesn't exist in list") {
