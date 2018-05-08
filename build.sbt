@@ -3,7 +3,6 @@ import Keys._
 import scalariform.formatter.preferences._
 import com.typesafe.sbt.SbtScalariform.{ScalariformKeys, autoImport}
 
-val repoKind = SettingKey[String]("repo-kind", "Maven repository kind (\"snapshots\" or \"releases\")")
 val projectName = "typeless"
 
 version := "0.5.0"
@@ -40,11 +39,7 @@ scalariformPreferences := scalariformPreferences.value
       .setPreference(SpacesAroundMultiImports, true)
       .setPreference(DanglingCloseParenthesis, Preserve)
       .setPreference(DoubleIndentConstructorArguments, true)
-repoKind := (if(version.value.trim.endsWith("SNAPSHOT")) "snapshots" else "releases")
-publishTo := (repoKind.value match {
-  case "snapshots" => Some("snapshots" at "https://oss.sonatype.org/content/repositories/snapshots")
-  case "releases" =>  Some("releases"  at "https://oss.sonatype.org/service/local/staging/deploy/maven2")
-})
+publishTo := sonatypePublishTo.value
 publishMavenStyle := true
 publishArtifact in Test := false
 pomIncludeRepository := { _ => false }
