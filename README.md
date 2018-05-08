@@ -155,12 +155,13 @@ assert(butterfliesStation1 != butterfliesStation2)
 
 ## Getting started
 
+### Scala 2.11
 ```scala
 libraryDependencies += "ai.x" %% "typeless" % "0.4.2"
 ```
 
-Currently all operations are on `HLists`, and therefore the only useful import is:
-
+### Scala 2.12
 ```scala
-import typeless.hlist._
+libraryDependencies += "ai.x" %% "typeless" % "0.5.0"
 ```
+
