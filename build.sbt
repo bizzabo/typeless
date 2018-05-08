@@ -25,7 +25,6 @@ scalacOptions ++= Seq(
 testOptions in Test += Tests.Argument(TestFrameworks.ScalaTest, "-oSD")
 organizationName := "x.ai"
 organization := "ai.x"
-sonatypeProfileName := "x.ai"
 scalacOptions in (Compile, doc) ++= Seq(
   "-doc-footer", projectName+" is developed by Miguel Iglesias.",
   "-implicits",
