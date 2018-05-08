@@ -25,41 +25,37 @@ import shapeless.test.illTyped
 
 class SelectFunctionsTests extends FunSuite with Matchers {
   val functions =
-    { (x: String, i: Int) => s"$x + $i" } ::
-      { (x: String) => x.size } ::
-      { (x: String, s: Char, i: Int) => i.toDouble } :: //is possible to have functions with the same context, they will all be used
-      { (x: String, s: Char, i: Int) => s.toInt + i * 2 + x.size } ::
-      { (x: Char) => x.toInt } ::
+    { ( x: String, i: Int ) => s"$x + $i" } ::
+      { ( x: String ) => x.size } ::
+      { ( x: String, s: Char, i: Int ) => i.toDouble } :: //is possible to have functions with the same context, they will all be used
+      { ( x: String, s: Char, i: Int ) => s.toInt + i * 2 + x.size } ::
+      { ( x: Char ) => x.toInt } ::
       HNil
 
   val hi = "hi"
-  test("single argument") {
-    illTyped("""
+  test( "single argument" ) {
+    illTyped( """
       SelectFunctions.applyAll(hi)(functions)
-    """)
+    """ )
   }
-  test("two arguments") {
+  test( "two arguments" ) {
     assert(
-      SelectFunctions.applyAll(1, hi)(functions.take(2)) === "hi + 1" :: 2 :: HNil
-
-    )
+      SelectFunctions.applyAll( 1, hi )( functions.take( 2 ) ) === "hi + 1" :: 2 :: HNil )
   }
-  test("three arguments") {
+  test( "three arguments" ) {
     assert(
-      SelectFunctions.applyAll(hi, 1, 2d)(functions.take(2)) === "hi + 1" :: 2 :: HNil
-    )
+      SelectFunctions.applyAll( hi, 1, 2d )( functions.take( 2 ) ) === "hi + 1" :: 2 :: HNil )
   }
-  test("not enough arguments") {
-    illTyped("""
+  test( "not enough arguments" ) {
+    illTyped( """
       SelectFunctions.applyAll(hi, 'a')(functions)
-    """)
+    """ )
   }
 
-  test("four arguments in different order") {
+  test( "four arguments in different order" ) {
     // the order of the arguments doesn't matter
     assert(
-      SelectFunctions.applyAll(hi, 2d, 1, 'a')(functions) === "hi + 1" :: 2 :: 1.0 :: 101 :: 97 :: HNil
-    )
+      SelectFunctions.applyAll( hi, 2d, 1, 'a' )( functions ) === "hi + 1" :: 2 :: 1.0 :: 101 :: 97 :: HNil )
   }
 
 }

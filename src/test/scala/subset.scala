@@ -25,17 +25,15 @@ import typeless.hlist._
 class SubsetTests extends FunSuite with Matchers {
 
   val ls = 1 :: 2d :: 'a' :: HNil
-  test("find subset") {
+  test( "find subset" ) {
     val subset = Subset[Int :: Double :: Char :: HNil, Char :: Int :: HNil]
     assert(
-      subset(ls) === Some('a' :: 1 :: HNil)
-    )
+      subset( ls ) === Some( 'a' :: 1 :: HNil ) )
   }
-  test("not find a subset") {
+  test( "not find a subset" ) {
     val subset = Subset[Int :: Double :: Char :: HNil, String :: Char :: HNil]
     assert(
-      subset(ls) === None
-    )
+      subset( ls ) === None )
   }
 
 }

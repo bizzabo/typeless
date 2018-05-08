@@ -22,25 +22,25 @@ import shapeless._
 
 /*
  * "tries" to find A in L,
- * if A is present it returns Some[A], 
+ * if A is present it returns Some[A],
  * otherwise it returns None
  */
 trait Find[L <: HList, A] {
-  def find(l: L): Option[A]
+  def find( l: L ): Option[A]
 }
 
 object Find {
-  def apply[A, L <: HList](implicit f: Find[L, A]) = f
-  implicit class Ops[L <: HList](l: L) {
-    def find[A](implicit f: Find[L, A]) = f.find(l)
+  def apply[A, L <: HList]( implicit f: Find[L, A] ) = f
+  implicit class Ops[L <: HList]( l: L ) {
+    def find[A]( implicit f: Find[L, A] ) = f.find( l )
   }
-  implicit def hconsFound[A, H, T <: HList](implicit ev: H =:= A) = new Find[H :: T, A] {
-    def find(l: H :: T) = Some(l.head)
+  implicit def hconsFound[A, H, T <: HList]( implicit ev: H =:= A ) = new Find[H :: T, A] {
+    def find( l: H :: T ) = Some( l.head )
   }
-  implicit def hconsNotFound[A, H, T <: HList](implicit f: Find[T, A]) = new Find[H :: T, A] {
-    def find(l: H :: T) = f.find(l.tail)
+  implicit def hconsNotFound[A, H, T <: HList]( implicit f: Find[T, A] ) = new Find[H :: T, A] {
+    def find( l: H :: T ) = f.find( l.tail )
   }
   implicit def hnil[A] = new Find[HNil, A] {
-    def find(l: HNil) = None
+    def find( l: HNil ) = None
   }
 }

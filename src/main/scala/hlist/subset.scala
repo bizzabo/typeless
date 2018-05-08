@@ -29,29 +29,28 @@ import Find.Ops
 
 /*
    * "tries" to find all elements of S in L,
-   * if all elements are  present it returns Some[S], 
+   * if all elements are  present it returns Some[S],
    * otherwise it returns None
    */
 trait Subset[L <: HList, S <: HList] {
-  def apply(l: L): Option[S]
+  def apply( l: L ): Option[S]
 }
 
 object Subset {
-  def apply[L <: HList, S <: HList](implicit f: Subset[L, S]) = f
+  def apply[L <: HList, S <: HList]( implicit f: Subset[L, S] ) = f
   implicit def hcons[L <: HList, H, T <: HList](
     implicit
-    find: Find[L, H],
-    subset: Lazy[Subset[L, T]]
-  ) = new Subset[L, H :: T] {
-    def apply(l: L) =
+    find:   Find[L, H],
+    subset: Lazy[Subset[L, T]] ) = new Subset[L, H :: T] {
+    def apply( l: L ) =
       for {
         h <- l.find[H]
-        t <- subset.value(l)
+        t <- subset.value( l )
       } yield h :: t
   }
 
   implicit def hnil[L <: HList]: Subset[L, HNil] = new Subset[L, HNil] {
-    def apply(l: L) = Some(HNil)
+    def apply( l: L ) = Some( HNil )
   }
 }
 

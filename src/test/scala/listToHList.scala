@@ -30,28 +30,28 @@ class listToHList extends FunSuite with Matchers {
   case class C() extends A
   case class D() extends A
 
-  case class E(b: B, c: C)
-  case class F(b: B, d: D)
+  case class E( b: B, c: C )
+  case class F( b: B, d: D )
 
-  val listA: List[A] = List(B(), C())
+  val listA: List[A] = List( B(), C() )
 
-  test("can convert a list of values to a product if the values contained within the list match the required types of the product") {
-    assert(listA.toProduct[E] === Some(E(B(), C())))
+  test( "can convert a list of values to a product if the values contained within the list match the required types of the product" ) {
+    assert( listA.toProduct[E] === Some( E( B(), C() ) ) )
   }
 
-  test("won't convert a list, if the types don't match") {
-    assert(listA.toProduct[F] === None)
+  test( "won't convert a list, if the types don't match" ) {
+    assert( listA.toProduct[F] === None )
   }
 
-  test("will find instance of type if it is in the beginning of the list") {
-    assert(listA.findByType[B] === Some(B()))
+  test( "will find instance of type if it is in the beginning of the list" ) {
+    assert( listA.findByType[B] === Some( B() ) )
   }
 
-  test("will find instance of type if it is at the end of the list") {
-    assert(listA.findByType[C] === Some(C()))
+  test( "will find instance of type if it is at the end of the list" ) {
+    assert( listA.findByType[C] === Some( C() ) )
   }
 
-  test("won't find instance if it doesn't exist in list") {
-    assert(listA.findByType[D] === None)
+  test( "won't find instance if it doesn't exist in list" ) {
+    assert( listA.findByType[D] === None )
   }
 }

@@ -23,93 +23,81 @@ import hlist.EqualsIgnoringFields.Ops
 
 sealed trait Monarch
 case class Butterflies(
-  _id: Long,
-  date: Long,
-  count: Int
-) extends Monarch
+    _id:   Long,
+    date:  Long,
+    count: Int ) extends Monarch
 case class Dictator(
-  _id: Long,
-  date: Long,
-  count: Int
-) extends Monarch
+    _id:   Long,
+    date:  Long,
+    count: Int ) extends Monarch
 
 class TestEqualsIgnoreFields extends FunSuite with Matchers {
-  test("same class equals") {
+  test( "same class equals" ) {
     val butterfliesStation1 = Butterflies(
-      _id = 1,
-      date = 1131,
-      count = 2
-    )
+      _id   = 1,
+      date  = 1131,
+      count = 2 )
     val butterfliesStation2 = Butterflies(
-      _id = 2,
-      date = 1131,
-      count = 2
-    )
+      _id   = 2,
+      date  = 1131,
+      count = 2 )
 
-    assert(butterfliesStation1.equalsIgnoringFields(_ == '_id)(butterfliesStation2))
-    assert(butterfliesStation1 != butterfliesStation2)
+    assert( butterfliesStation1.equalsIgnoringFields( _ == '_id )( butterfliesStation2 ) )
+    assert( butterfliesStation1 != butterfliesStation2 )
   }
-  test("same class equals but same type") {
+  test( "same class equals but same type" ) {
     val butterfliesStation1: Monarch = Butterflies(
-      _id = 1,
-      date = 1131,
-      count = 2
-    )
+      _id   = 1,
+      date  = 1131,
+      count = 2 )
     val butterfliesStation2 = Butterflies(
-      _id = 2,
-      date = 1131,
-      count = 2
-    )
+      _id   = 2,
+      date  = 1131,
+      count = 2 )
 
-    assert(butterfliesStation1.equalsIgnoringFields(_ == '_id)(butterfliesStation2))
-    assert(butterfliesStation1 != butterfliesStation2)
+    assert( butterfliesStation1.equalsIgnoringFields( _ == '_id )( butterfliesStation2 ) )
+    assert( butterfliesStation1 != butterfliesStation2 )
   }
 
-  test("discard several fields") {
+  test( "discard several fields" ) {
     val butterfliesStation1 = Butterflies(
-      _id = 1,
-      date = 1131,
-      count = 3
-    )
+      _id   = 1,
+      date  = 1131,
+      count = 3 )
     val butterfliesStation2 = Butterflies(
-      _id = 2,
-      date = 1131,
-      count = 2
-    )
+      _id   = 2,
+      date  = 1131,
+      count = 2 )
 
-    assert(butterfliesStation1.equalsIgnoringFields(field => field == '_id || field == 'count)(butterfliesStation2))
-    assert(!butterfliesStation1.equalsIgnoringFields(_ == '_id)(butterfliesStation2))
-    assert(butterfliesStation1 != butterfliesStation2)
+    assert( butterfliesStation1.equalsIgnoringFields( field => field == '_id || field == 'count )( butterfliesStation2 ) )
+    assert( !butterfliesStation1.equalsIgnoringFields( _ == '_id )( butterfliesStation2 ) )
+    assert( butterfliesStation1 != butterfliesStation2 )
   }
 
-  test("two classes are different") {
+  test( "two classes are different" ) {
     val butterfliesStation: Monarch = Butterflies(
-      _id = 1,
-      date = 1131,
-      count = 2
-    )
+      _id   = 1,
+      date  = 1131,
+      count = 2 )
     val dictatorUltra: Monarch = Dictator(
-      _id = 2,
-      date = 1131,
-      count = 2
-    )
+      _id   = 2,
+      date  = 1131,
+      count = 2 )
 
-    assert(!butterfliesStation.equalsIgnoringFields(_ == '_id)(dictatorUltra))
+    assert( !butterfliesStation.equalsIgnoringFields( _ == '_id )( dictatorUltra ) )
   }
 
-  test("same class bad field") {
+  test( "same class bad field" ) {
     val butterfliesStation1 = Butterflies(
-      _id = 1,
-      date = 1131,
-      count = 2
-    )
+      _id   = 1,
+      date  = 1131,
+      count = 2 )
     val butterfliesStation2 = Butterflies(
-      _id = 2,
-      date = 1131,
-      count = 2
-    )
+      _id   = 2,
+      date  = 1131,
+      count = 2 )
 
-    assert(!butterfliesStation1.equalsIgnoringFields(_ == '_id2)(butterfliesStation2))
-    assert(butterfliesStation1 != butterfliesStation2)
+    assert( !butterfliesStation1.equalsIgnoringFields( _ == '_id2 )( butterfliesStation2 ) )
+    assert( butterfliesStation1 != butterfliesStation2 )
   }
 }

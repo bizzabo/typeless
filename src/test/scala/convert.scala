@@ -27,14 +27,12 @@ class ConvertTests extends FunSuite with Matchers {
   type A = String :+: Double :+: CNil
   type B = Double :+: String :+: List[Int] :+: CNil
 
-  test("convert") {
+  test( "convert" ) {
     assert(
-      Convert[A, B].convert(Coproduct[A]("test")) === Some(Coproduct[B]("test"))
-    )
+      Convert[A, B].convert( Coproduct[A]( "test" ) ) === Some( Coproduct[B]( "test" ) ) )
   }
-  test("don't convert") {
+  test( "don't convert" ) {
     assert(
-      Convert[B, A].convert(Coproduct[B](List(1))) === None
-    )
+      Convert[B, A].convert( Coproduct[B]( List( 1 ) ) ) === None )
   }
 }
