@@ -2,6 +2,7 @@ import sbt._
 import Keys._
 import scalariform.formatter.preferences._
 import com.typesafe.sbt.SbtScalariform.{ScalariformKeys, autoImport}
+import xerial.sbt.Sonatype._
 
 val projectName = "typeless"
 
