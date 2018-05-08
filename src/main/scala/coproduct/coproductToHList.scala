@@ -22,38 +22,36 @@ import shapeless.ops.coproduct.Selector
 import shapeless.{ ::, Coproduct, Generic, HList, HNil }
 
 trait CoproductToHList[C <: Coproduct, L <: HList] {
-  def apply(c: Seq[C]): Option[L]
+  def apply( c: Seq[C] ): Option[L]
 }
 
 trait CoproductToHList0 {
   implicit def hconsNotFound[H, T <: HList, C <: Coproduct] = new CoproductToHList[C, H :: T] {
-    def apply(c: Seq[C]): Option[H :: T] = None
+    def apply( c: Seq[C] ): Option[H :: T] = None
   }
 }
 object CoproductToHList extends CoproductToHList0 {
-  def apply[C <: Coproduct, L <: HList](implicit c: CoproductToHList[C, L]) = c
-  implicit class Ops[C <: Coproduct, L <: HList](c: Seq[C]) {
+  def apply[C <: Coproduct, L <: HList]( implicit c: CoproductToHList[C, L] ) = c
+  implicit class Ops[C <: Coproduct, L <: HList]( c: Seq[C] ) {
     def toProduct[P <: Product](
       implicit
-      gen: Generic.Aux[P, L],
-      coproductToHList: CoproductToHList[C, L]
-    ): Option[P] = coproductToHList(c).map(gen.from)
+      gen:              Generic.Aux[P, L],
+      coproductToHList: CoproductToHList[C, L] ): Option[P] = coproductToHList( c ).map( gen.from )
 
-    def toHList[L <: HList](implicit coproductToHList: CoproductToHList[C, L]) = coproductToHList(c)
+    def toHList[L <: HList]( implicit coproductToHList: CoproductToHList[C, L] ) = coproductToHList( c )
   }
   implicit def hcons[H, T <: HList, C <: Coproduct](
     implicit
-    select: Selector[C, H],
-    coproductToHList: CoproductToHList[C, T]
-  ): CoproductToHList[C, H :: T] = new CoproductToHList[C, H :: T] {
-    def apply(c: Seq[C]): Option[H :: T] = {
+    select:           Selector[C, H],
+    coproductToHList: CoproductToHList[C, T] ): CoproductToHList[C, H :: T] = new CoproductToHList[C, H :: T] {
+    def apply( c: Seq[C] ): Option[H :: T] = {
       for {
-        h <- c.flatMap(_.select[H]).headOption
-        tail <- coproductToHList(c)
+        h <- c.flatMap( _.select[H] ).headOption
+        tail <- coproductToHList( c )
       } yield h :: tail
     }
   }
   implicit def hnil[C <: Coproduct] = new CoproductToHList[C, HNil] {
-    def apply(c: Seq[C]): Option[HNil] = Some(HNil)
+    def apply( c: Seq[C] ): Option[HNil] = Some( HNil )
   }
 }

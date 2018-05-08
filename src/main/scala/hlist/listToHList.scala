@@ -22,38 +22,35 @@ import shapeless._
 import syntax.typeable._
 
 trait ListToHList[L, H <: HList] {
-  def toHList(l: Seq[L]): Option[H]
+  def toHList( l: Seq[L] ): Option[H]
 }
 
 object ListToHList {
-  implicit class Ops[L, H <: HList](l: Seq[L]) {
+  implicit class Ops[L, H <: HList]( l: Seq[L] ) {
     def toProduct[P <: Product](
       implicit
-      generic: Generic.Aux[P, H],
-      listToHList: ListToHList[L, H]
-    ): Option[P] = listToHList.toHList(l).map(p => generic.from(p))
+      generic:     Generic.Aux[P, H],
+      listToHList: ListToHList[L, H] ): Option[P] = listToHList.toHList( l ).map( p => generic.from( p ) )
 
     def findByType[A](
       implicit
-      listToHList: ListToHList[L, A :: HNil]
-    ): Option[A] = {
-      listToHList.toHList(l).map(_.head)
+      listToHList: ListToHList[L, A :: HNil] ): Option[A] = {
+      listToHList.toHList( l ).map( _.head )
     }
   }
 
   implicit def hcons[L, H, T <: HList](
     implicit
     listToHList: ListToHList[L, T],
-    typeable: Typeable[H]
-  ): ListToHList[L, H :: T] = new ListToHList[L, H :: T] {
-    def toHList(l: Seq[L]): Option[H :: T] = {
+    typeable:    Typeable[H] ): ListToHList[L, H :: T] = new ListToHList[L, H :: T] {
+    def toHList( l: Seq[L] ): Option[H :: T] = {
       for {
-        h <- l.flatMap(_.cast[H]).headOption
-        tail <- listToHList.toHList(l)
+        h <- l.flatMap( _.cast[H] ).headOption
+        tail <- listToHList.toHList( l )
       } yield h :: tail
     }
   }
   implicit def hnil[L] = new ListToHList[L, HNil] {
-    def toHList(c: Seq[L]): Option[HNil] = Some(HNil)
+    def toHList( c: Seq[L] ): Option[HNil] = Some( HNil )
   }
 }

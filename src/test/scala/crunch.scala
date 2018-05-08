@@ -24,59 +24,58 @@ import typeless.hlist._
 
 class CrunchTests extends FunSuite with Matchers {
 
-  test("FlattenFunctions") {
+  test( "FlattenFunctions" ) {
     val functions1 =
-      { (x: String, i: Int) => (x.size + i) } ::
-        { (x: String, s: Char, i: Int) => (s.toInt + i * 2 + x.size) } ::
+      { ( x: String, i: Int ) => ( x.size + i ) } ::
+        { ( x: String, s: Char, i: Int ) => ( s.toInt + i * 2 + x.size ) } ::
         HNil
     val functions2 =
-      { (x: String, s: Char, i: Int) => (s.toInt + i + x.size) } ::
-        { (i: Int) => i.toDouble } ::
+      { ( x: String, s: Char, i: Int ) => ( s.toInt + i + x.size ) } ::
+        { ( i: Int ) => i.toDouble } ::
         HNil
 
     val functions = functions1 ::
       functions2 ::
       HNil
-    val res = FlattenFunctions.applyAll(1, "a", 'b')(functions)
+    val res = FlattenFunctions.applyAll( 1, "a", 'b' )( functions )
     assert(
-      res === 2 :: 101 :: 100 :: 1.0 :: HNil
-    )
+      res === 2 :: 101 :: 100 :: 1.0 :: HNil )
   }
 
   val ls =
-    { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
-      { (i: Int, s: String) => s"$i + $s" } ::
+    { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
+      { ( i: Int, s: String ) => s"$i + $s" } ::
       HNil
   val all =
     ls ::
@@ -100,9 +99,9 @@ class CrunchTests extends FunSuite with Matchers {
       ls ::
       HNil
 
-  test("apply all Hlist") {
-    val res = FlattenFunctions.applyAll(1, "a")(all)
-    assert(res.runtimeList.map(_.asInstanceOf[String]).distinct === List("1 + a"))
+  test( "apply all Hlist" ) {
+    val res = FlattenFunctions.applyAll( 1, "a" )( all )
+    assert( res.runtimeList.map( _.asInstanceOf[String] ).distinct === List( "1 + a" ) )
   }
 
 }

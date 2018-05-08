@@ -26,48 +26,48 @@ class coproductToHList extends FunSuite with Matchers {
 
   import CoproductToHList.Ops
 
-  test("can convert list of coproducts to hlist") {
+  test( "can convert list of coproducts to hlist" ) {
 
     type A = Int :+: String :+: CNil
     type L = Int :: String :: HNil
-    val a: Seq[A] = Seq(Coproduct[A](1), Coproduct[A]("a"))
+    val a: Seq[A] = Seq( Coproduct[A]( 1 ), Coproduct[A]( "a" ) )
 
-    assert(a.toHList[L] === Some(1 :: "a" :: HNil))
+    assert( a.toHList[L] === Some( 1 :: "a" :: HNil ) )
   }
 
-  test("order doesn't matter when converting list of coproducts to hlist") {
+  test( "order doesn't matter when converting list of coproducts to hlist" ) {
     type A = Int :+: String :+: CNil
     type L = String :: Int :: HNil
-    val a: Seq[A] = Seq(Coproduct[A](1), Coproduct[A]("a"))
+    val a: Seq[A] = Seq( Coproduct[A]( 1 ), Coproduct[A]( "a" ) )
 
-    assert(a.toHList[L] === Some("a" :: 1 :: HNil))
+    assert( a.toHList[L] === Some( "a" :: 1 :: HNil ) )
   }
 
-  test("cannot convert list of coproducts to hlist") {
+  test( "cannot convert list of coproducts to hlist" ) {
 
     type A = Int :+: String :+: CNil
 
-    val a: Seq[A] = Seq(Coproduct[A](1), Coproduct[A]("a"))
+    val a: Seq[A] = Seq( Coproduct[A]( 1 ), Coproduct[A]( "a" ) )
 
-    assert(a.toHList[Double :: HNil] === None)
+    assert( a.toHList[Double :: HNil] === None )
   }
 
-  test("can convert list of coproducts to case class") {
+  test( "can convert list of coproducts to case class" ) {
     type A = String :+: Int :+: CNil
-    case class Foo(i: Int, s: String)
+    case class Foo( i: Int, s: String )
 
-    val a: Seq[A] = Seq(Coproduct[A](1), Coproduct[A]("a"))
+    val a: Seq[A] = Seq( Coproduct[A]( 1 ), Coproduct[A]( "a" ) )
 
-    assert(a.toProduct[Foo] === Some(Foo(1, "a")))
+    assert( a.toProduct[Foo] === Some( Foo( 1, "a" ) ) )
   }
 
-  test("cannot convert list of coproducts to case class if types don't match") {
+  test( "cannot convert list of coproducts to case class if types don't match" ) {
     type A = String :+: Int :+: CNil
-    case class FooD(i: Int, s: String, d: Double)
+    case class FooD( i: Int, s: String, d: Double )
 
-    val a: Seq[A] = Seq(Coproduct[A](1), Coproduct[A]("a"))
+    val a: Seq[A] = Seq( Coproduct[A]( 1 ), Coproduct[A]( "a" ) )
 
-    assert(a.toProduct[FooD] === None)
+    assert( a.toProduct[FooD] === None )
   }
 
 }

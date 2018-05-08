@@ -26,32 +26,30 @@ import ops.function._
 import shapeless.ops.coproduct.Inject
 
 trait Convert[L <: Coproduct, S <: Coproduct] {
-  def convert(l: L): Option[S]
+  def convert( l: L ): Option[S]
 }
 
 trait Convert0 {
   implicit def cCons0[H, T <: Coproduct, S <: Coproduct](
     implicit
-    subset: Convert[T, S]
-  ): Convert[:+:[H, T], S] = new Convert[H :+: T, S] {
-    def convert(l: H :+: T): Option[S] = l.tail.flatMap(f => subset.convert(f))
+    subset: Convert[T, S] ): Convert[:+:[H, T], S] = new Convert[H :+: T, S] {
+    def convert( l: H :+: T ): Option[S] = l.tail.flatMap( f => subset.convert( f ) )
   }
 }
 
 object Convert extends Convert0 {
-  def apply[L <: Coproduct, S <: Coproduct](implicit f: Convert[L, S]) = f
-  def convert[L <: Coproduct, S <: Coproduct](implicit f: Convert[L, S]) = f
-  implicit class Ops[L <: Coproduct](l: L) {
-    def convert[S <: Coproduct](implicit f: Convert[L, S]): Option[S] = f.convert(l)
+  def apply[L <: Coproduct, S <: Coproduct]( implicit f: Convert[L, S] ) = f
+  def convert[L <: Coproduct, S <: Coproduct]( implicit f: Convert[L, S] ) = f
+  implicit class Ops[L <: Coproduct]( l: L ) {
+    def convert[S <: Coproduct]( implicit f: Convert[L, S] ): Option[S] = f.convert( l )
   }
   implicit def cCons[H, T <: Coproduct, S <: Coproduct](
     implicit
     inject: Inject[S, H],
-    subset: Convert[T, S]
-  ): Convert[:+:[H, T], S] = new Convert[H :+: T, S] {
-    def convert(l: H :+: T): Option[S] = l.head.map(inject(_))
+    subset: Convert[T, S] ): Convert[:+:[H, T], S] = new Convert[H :+: T, S] {
+    def convert( l: H :+: T ): Option[S] = l.head.map( inject( _ ) )
   }
   implicit def cNil[S <: Coproduct]: Convert[CNil, S] = new Convert[CNil, S] {
-    def convert(l: CNil): Option[S] = None
+    def convert( l: CNil ): Option[S] = None
   }
 }

@@ -26,15 +26,13 @@ import Find.Ops
 class FindTests extends FunSuite with Matchers {
 
   val ls = 1 :: 2d :: 'a' :: HNil
-  test("find a type") {
+  test( "find a type" ) {
     assert(
-      ls.find[Double] === Some(2d)
-    )
+      ls.find[Double] === Some( 2d ) )
   }
-  test("not find a type") {
+  test( "not find a type" ) {
     assert(
-      ls.find[String] === None
-    )
+      ls.find[String] === None )
   }
 
 }

@@ -29,65 +29,60 @@ import shapeless.ops.coproduct.Inject
    * it applies the arguments to the functions for which all the arguments are present
    * it return an HList with the results
    */
-@annotation.implicitNotFound(msg = "Some functions are not satisfied \n Functions: ${FF} \n Arguments: ${Context}")
+@annotation.implicitNotFound( msg = "Some functions are not satisfied \n Functions: ${FF} \n Arguments: ${Context}" )
 trait SelectFunctions[FF <: HList, Context <: HList] {
   type Out <: HList
-  def apply(fs: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]): Out
+  def apply( fs: FF, context: Context )( implicit distinct: IsDistinctConstraint[Context] ): Out
 }
 
 object SelectFunctions {
   type Aux[FF <: HList, Context <: HList, R <: HList] = SelectFunctions[FF, Context] { type Out = R }
   implicit def hcons[F, FF <: HList, Context <: HList, Args <: HList, R, RT <: HList](
     implicit
-    fp: FnToProduct.Aux[F, Args => R],
-    subset: SelectAll[Context, Args],
-    applyContext: SelectFunctions.Aux[FF, Context, RT]
-  ): SelectFunctions.Aux[F :: FF, Context, R :: RT] = new SelectFunctions[F :: FF, Context] {
+    fp:           FnToProduct.Aux[F, Args => R],
+    subset:       SelectAll[Context, Args],
+    applyContext: SelectFunctions.Aux[FF, Context, RT] ): SelectFunctions.Aux[F :: FF, Context, R :: RT] = new SelectFunctions[F :: FF, Context] {
     type Out = R :: RT
-    def apply(fs: F :: FF, context: Context)(implicit distinct: IsDistinctConstraint[Context]) =
-      fs.head.toProduct(subset(context)) :: applyContext(fs.tail, context)
+    def apply( fs: F :: FF, context: Context )( implicit distinct: IsDistinctConstraint[Context] ) =
+      fs.head.toProduct( subset( context ) ) :: applyContext( fs.tail, context )
   }
 
   implicit def hnil[Context <: HList]: SelectFunctions.Aux[HNil, Context, HNil] = new SelectFunctions[HNil, Context] {
     type Out = HNil
-    def apply(fs: HNil, context: Context)(implicit distinct: IsDistinctConstraint[Context]) = HNil
+    def apply( fs: HNil, context: Context )( implicit distinct: IsDistinctConstraint[Context] ) = HNil
   }
 
-  def applyAll[Context <: Product, HContext <: HList, FF <: HList](context: Context)(fs: FF)(
+  def applyAll[Context <: Product, HContext <: HList, FF <: HList]( context: Context )( fs: FF )(
     implicit
-    gen: Generic.Aux[Context, HContext],
+    gen:             Generic.Aux[Context, HContext],
     selectFunctions: SelectFunctions[FF, HContext],
-    distinct: IsDistinctConstraint[HContext]
-  ) = selectFunctions(fs, gen.to(context))
+    distinct:        IsDistinctConstraint[HContext] ) = selectFunctions( fs, gen.to( context ) )
 
-  def applyAll[HContext <: HList, FF <: HList](context: HContext)(fs: FF)(
+  def applyAll[HContext <: HList, FF <: HList]( context: HContext )( fs: FF )(
     implicit
     selectFunctions: SelectFunctions[FF, HContext],
-    distinct: IsDistinctConstraint[HContext]
-  ) = selectFunctions(fs, context)
+    distinct:        IsDistinctConstraint[HContext] ) = selectFunctions( fs, context )
 
-  def applyAll[X, FF <: HList, R](x: X)(fs: FF)(
+  def applyAll[X, FF <: HList, R]( x: X )( fs: FF )(
     implicit
-    selectFunctions: SelectFunctions[FF, X :: HNil]
-  ) = selectFunctions(fs, x :: HNil)
+    selectFunctions: SelectFunctions[FF, X :: HNil] ) = selectFunctions( fs, x :: HNil )
 }
 
-/* takes an HList of HLists of functions and an HList of potential arguments, 
+/* takes an HList of HLists of functions and an HList of potential arguments,
  * and uses SelectFunctions[Context, FF] to calculate the resulting HList
  */
 trait FlattenFunctions[Context <: HList, FFF <: HList] {
   type Out <: HList
-  def apply(fs: FFF, args: Context)(implicit distinct: IsDistinctConstraint[Context]): Out
+  def apply( fs: FFF, args: Context )( implicit distinct: IsDistinctConstraint[Context] ): Out
 }
 
 trait FlattenFunctions0 {
   implicit def hcons[Context <: HList, FF <: HList, FFF <: HList, SR <: HList](
     implicit
-    flattenFunctions: FlattenFunctions.Aux[Context, FFF, SR]
-  ): FlattenFunctions.Aux[Context, FF :: FFF, SR] = new FlattenFunctions[Context, FF :: FFF] {
+    flattenFunctions: FlattenFunctions.Aux[Context, FFF, SR] ): FlattenFunctions.Aux[Context, FF :: FFF, SR] = new FlattenFunctions[Context, FF :: FFF] {
     type Out = SR
-    def apply(fs: FF :: FFF, args: Context)(implicit distinct: IsDistinctConstraint[Context]) =
-      flattenFunctions(fs.tail, args)
+    def apply( fs: FF :: FFF, args: Context )( implicit distinct: IsDistinctConstraint[Context] ) =
+      flattenFunctions( fs.tail, args )
   }
 }
 
@@ -95,26 +90,24 @@ object FlattenFunctions extends FlattenFunctions0 {
   type Aux[Context <: HList, FFF <: HList, R <: HList] = FlattenFunctions[Context, FFF] { type Out = R }
   implicit def hcons[Context <: HList, FF <: HList, FFF <: HList, R <: HList, SR <: HList](
     implicit
-    selectFunctions: SelectFunctions.Aux[FF, Context, R],
-    flattenFunctions: FlattenFunctions.Aux[Context, FFF, SR]
-  ): FlattenFunctions.Aux[Context, FF :: FFF, R :: SR] = new FlattenFunctions[Context, FF :: FFF] {
+    selectFunctions:  SelectFunctions.Aux[FF, Context, R],
+    flattenFunctions: FlattenFunctions.Aux[Context, FFF, SR] ): FlattenFunctions.Aux[Context, FF :: FFF, R :: SR] = new FlattenFunctions[Context, FF :: FFF] {
     type Out = R :: SR
-    def apply(fs: FF :: FFF, args: Context)(implicit distinct: IsDistinctConstraint[Context]) =
-      selectFunctions(fs.head, args) :: flattenFunctions(fs.tail, args)
+    def apply( fs: FF :: FFF, args: Context )( implicit distinct: IsDistinctConstraint[Context] ) =
+      selectFunctions( fs.head, args ) :: flattenFunctions( fs.tail, args )
   }
   implicit def hnil[Context <: HList]: FlattenFunctions.Aux[Context, HNil, HNil] =
     new FlattenFunctions[Context, HNil] {
       type Out = HNil
-      def apply(fs: HNil, args: Context)(implicit distinct: IsDistinctConstraint[Context]) = HNil
+      def apply( fs: HNil, args: Context )( implicit distinct: IsDistinctConstraint[Context] ) = HNil
     }
 
-  def applyAll[Context <: Product, HContext <: HList, FFF <: HList, RR <: HList](args: Context)(fs: FFF)(
+  def applyAll[Context <: Product, HContext <: HList, FFF <: HList, RR <: HList]( args: Context )( fs: FFF )(
     implicit
-    gen: Generic.Aux[Context, HContext],
+    gen:              Generic.Aux[Context, HContext],
     flattenFunctions: FlattenFunctions.Aux[HContext, FFF, RR],
-    adj: Adjoin[RR],
-    distinct: IsDistinctConstraint[HContext]
-  ) = flattenFunctions(fs, gen.to(args)).adjoined
+    adj:              Adjoin[RR],
+    distinct:         IsDistinctConstraint[HContext] ) = flattenFunctions( fs, gen.to( args ) ).adjoined
 
 }
 
