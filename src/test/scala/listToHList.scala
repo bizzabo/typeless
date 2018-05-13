@@ -42,16 +42,4 @@ class listToHList extends FunSuite with Matchers {
   test( "won't convert a list, if the types don't match" ) {
     assert( listA.toProduct[F] === None )
   }
-
-  test( "will find instance of type if it is in the beginning of the list" ) {
-    assert( listA.findByType[B] === Some( B() ) )
-  }
-
-  test( "will find instance of type if it is at the end of the list" ) {
-    assert( listA.findByType[C] === Some( C() ) )
-  }
-
-  test( "won't find instance if it doesn't exist in list" ) {
-    assert( listA.findByType[D] === None )
-  }
 }
