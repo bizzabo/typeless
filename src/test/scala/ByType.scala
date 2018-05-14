@@ -48,5 +48,15 @@ class ByType extends FunSuite with Matchers {
 
     assert( listB.filterNotByType[B] === List( C() ) )
   }
+  test( ".containsType returns true if passed type that is contained in seq" ) {
+    val listB: List[A] = List( C(), B() )
+
+    assert( listB.containsType[B] === true )
+  }
+  test( ".containsType returns false if passed type that is contained in seq" ) {
+    val listB: List[A] = List( C() )
+
+    assert( listB.containsType[B] === false )
+  }
 
 }

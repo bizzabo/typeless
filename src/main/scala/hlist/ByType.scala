@@ -23,7 +23,7 @@ import syntax.typeable._
 
 object ByType {
 
-  implicit class FindByType[L]( l: Seq[L] ) {
+  implicit class ByType[L]( l: Seq[L] ) {
     /** Finds first element in Seq that can be cast to the type of the type parameter
      */
 
@@ -47,6 +47,14 @@ object ByType {
       implicit
       typeable: Typeable[A]
     ): Seq[L] = l.filter { _.cast[A].isEmpty }
+
+    /** Returns true if seq contains an instance of the type paramter
+     */
+
+    def containsType[A](
+      implicit
+      typeable: Typeable[A]
+    ): Boolean = l.findByType[A].isDefined
   }
 }
 
