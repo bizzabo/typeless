@@ -155,13 +155,9 @@ assert(butterfliesStation1 != butterfliesStation2)
 
 ## Getting started
 
-### Scala 2.11
+### Scala 2.11/2.12
 ```scala
-libraryDependencies += "ai.x" %% "typeless" % "0.4.2"
+libraryDependencies += "ai.x" %% "typeless" % "0.6.0"
 ```
 
-### Scala 2.12
-```scala
-libraryDependencies += "ai.x" %% "typeless" % "0.5.0"
-```
 

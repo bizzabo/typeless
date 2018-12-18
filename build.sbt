@@ -6,15 +6,21 @@ import xerial.sbt.Sonatype._
 
 val projectName = "typeless"
 
-version := "0.5.0"
+version := "0.6.0"
 name := projectName
-scalaVersion := "2.12.6"
+scalaVersion := "2.12.8"
+crossScalaVersions := Seq("2.11.11", scalaVersion.value)
 description := "It provides some extra shapeless functionallity"
 libraryDependencies ++=   Seq(
   "com.chuusai" %% "shapeless" % "2.3.2",
   "org.scalactic" %% "scalactic" % "3.0.5",
   "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 )
+
+useGpg := true
+
+credentials += Credentials(Path.userHome / ".sbt" / "sonatype_credential")
+
 resolvers ++= Seq(Resolver.sonatypeRepo("releases"),Resolver.sonatypeRepo("snapshots"))
 scalacOptions ++= Seq(
   //"-Xlog-implicits",
